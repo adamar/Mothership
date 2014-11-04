@@ -3,7 +3,6 @@ package main
 import (
 	"bytes"
 	"encoding/json"
-	"fmt"
 	"log"
 	"net/http"
 	"os"
@@ -48,7 +47,7 @@ func main() {
 
 	case len(os.Args) > 2:
 
-                sendJSON()
+                startCom()
 		args := []string(os.Args[2:])
 		data, err := exec.Command(os.Args[1], args...).CombinedOutput()
                 log.Print(err)
@@ -60,18 +59,18 @@ func main() {
 
 
 
-func genUuid() {
+func genUuid() (string, error) {
 	out, err := exec.Command("uuidgen").Output()
 	if err != nil {
-		log.Fatal(err)
+		return "", err
 	}
-	fmt.Printf("%s", out)
+        return string(out), nil
 }
 
 
 
 
-func sendJSON() {
+func startCom() error {
 
         blob := ProcStart{
                 UUID: "asxasxasx",
@@ -83,11 +82,16 @@ func sendJSON() {
         }
 
         endpoint := "/start"
-        jsonBlob, _ := json.Marshal(blob)
+        jsonBlob, err := json.Marshal(blob)
+        if err != nil {
+            return err
+        }
 
         postJSON(endpoint, jsonBlob)
-
+        return nil
 }
+
+
 
 
 
