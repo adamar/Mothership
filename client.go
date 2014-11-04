@@ -68,12 +68,12 @@ func genUuid() (string, error) {
 }
 
 
-
-
 func startCom() error {
 
+        uuid, _ := genUuid()
+
         blob := ProcStart{
-                UUID: "asxasxasx",
+                UUID: uuid,
                 LocalTime: "12:02",
                 Command: "/bin/bash /var/www/thing.html",
                 Hostname: "ubuntu-server",
@@ -90,9 +90,6 @@ func startCom() error {
         postJSON(endpoint, jsonBlob)
         return nil
 }
-
-
-
 
 
 func postJSON(endpoint string, jsonBlob []byte) {
