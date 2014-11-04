@@ -77,11 +77,13 @@ func startCom(cmd []string) error {
         ip, _ := getIP()
         cmdstring := strings.Join(cmd, " ")
 
+        hostname, _ := os.Hostname()
+
         blob := ProcStart{
                 UUID: uuid,
                 LocalTime: "12:02",
                 Command: cmdstring,
-                Hostname: "ubuntu-server",
+                Hostname: hostname,
                 IPaddress: ip,
                 Hash: "A736BC202EC3C",
         }
