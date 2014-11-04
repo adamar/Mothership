@@ -8,6 +8,7 @@ import (
 	"os"
 	"os/exec"
         "net"
+        "strings"
 )
 
 
@@ -48,7 +49,7 @@ func main() {
 
 	case len(os.Args) > 2:
 
-                startCom()
+                startCom(os.Args[1:])
 		args := []string(os.Args[2:])
 		data, err := exec.Command(os.Args[1], args...).CombinedOutput()
                 log.Print(err)
@@ -69,16 +70,17 @@ func genUuid() (string, error) {
 }
 
 
-func startCom() error {
+func startCom(cmd []string) error {
 
         uuid, _ := genUuid()
 
         ip, _ := getIP()
+        cmdstring := strings.Join(cmd, " ")
 
         blob := ProcStart{
                 UUID: uuid,
                 LocalTime: "12:02",
-                Command: "/bin/bash /var/www/thing.html",
+                Command: cmdstring,
                 Hostname: "ubuntu-server",
                 IPaddress: ip,
                 Hash: "A736BC202EC3C",
