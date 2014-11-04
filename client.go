@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"os"
 	"os/exec"
+        "net"
 )
 
 
@@ -72,12 +73,14 @@ func startCom() error {
 
         uuid, _ := genUuid()
 
+        ip, _ := getIP()
+
         blob := ProcStart{
                 UUID: uuid,
                 LocalTime: "12:02",
                 Command: "/bin/bash /var/www/thing.html",
                 Hostname: "ubuntu-server",
-                IPaddress: "142.32.12.122",
+                IPaddress: ip,
                 Hash: "A736BC202EC3C",
         }
 
@@ -103,5 +106,28 @@ func postJSON(endpoint string, jsonBlob []byte) {
 	client := &http.Client{}
 	resp, _ := client.Do(req)
 	defer resp.Body.Close()
+
+}
+
+
+func getIP() (string, error) {
+
+    addrs, err := net.InterfaceAddrs()
+    if err != nil {
+        return "", nil
+    }
+
+    var IP string
+
+    for _, add := range addrs {
+        if ipadd, ok := add.(*net.IPNet); ok && !ipadd.IP.IsLoopback() {
+            // Add get ipv6 and drop through to ipv4 if poss
+            if ipadd.IP.To4() != nil {
+               IP = ipadd.IP.String()
+            }
+        }
+    }
+
+    return IP, nil
 
 }
