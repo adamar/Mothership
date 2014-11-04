@@ -72,11 +72,16 @@ func genUuid() (string, error) {
 
 func startCom(cmd []string) error {
 
+        // Generate UUID
         uuid, _ := genUuid()
 
+        // Get IP
         ip, _ := getIP()
+
+        // Get Command and Args
         cmdstring := strings.Join(cmd, " ")
 
+        // Get Hostname
         hostname, _ := os.Hostname()
 
         blob := ProcStart{
