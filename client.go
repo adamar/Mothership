@@ -82,9 +82,18 @@ func sendJSON() {
                 Hash: "A736BC202EC3C",
         }
 
-	url := "http://localhost:8080/start"
+        endpoint := "/start"
+        jsonBlob, _ := json.Marshal(blob)
 
-	jsonBlob, _ := json.Marshal(blob)
+        postJSON(endpoint, jsonBlob)
+
+}
+
+
+
+func postJSON(endpoint string, jsonBlob []byte) {
+
+	url := "http://localhost:8080" + endpoint
 	req, _ := http.NewRequest("POST", url, bytes.NewBuffer(jsonBlob))
 
 	req.Header.Set("X-Custom-Header", "MyServer")
