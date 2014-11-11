@@ -53,15 +53,11 @@ func handleEnd(w http.ResponseWriter, req *http.Request) {
 }
 
 
-//func handleMainpage( w http.ResponseWriter, req *http.Request) {
-//        w.Write([]byte("welcome"))
-//}
 
-
-func SimplePage(w http.ResponseWriter, req *http.Request, template string) {
+func mainHandler(w http.ResponseWriter, req *http.Request) {
 
         r := render.New(render.Options{})
-        r.HTML(w, http.StatusOK, template, nil)
+        r.HTML(w, http.StatusOK, "main", nil)
 
 }
 
@@ -70,6 +66,7 @@ func main() {
 	http.HandleFunc("/start", handleStart)
 	http.HandleFunc("/heartbeat", handleHeartbeat)
 	http.HandleFunc("/end", handleEnd)
+        http.HandleFunc("/", mainHandler)
 	http.ListenAndServe(":8080", nil)
 }
 
