@@ -22,6 +22,7 @@ func handleStart(w http.ResponseWriter, req *http.Request) {
      }
 }
 
+
 func handleHeartbeat(w http.ResponseWriter, req *http.Request) {
      if req.Method == "POST" {
          body, err := ioutil.ReadAll(req.Body)
@@ -35,8 +36,24 @@ func handleHeartbeat(w http.ResponseWriter, req *http.Request) {
      }
 }
 
+
 func handleEnd(w http.ResponseWriter, req *http.Request) {
-        w.Write([]byte("something"))
+     if req.Method == "POST" {
+         body, err := ioutil.ReadAll(req.Body)
+         if err != nil {
+            log.Print(err)
+         }
+         log.Print(string(body))
+         w.Write([]byte("status"))
+     } else {
+         w.Write([]byte("error, do post"))
+     }
+
+}
+
+
+func handleMainpage( w http.ResponseWriter, req *http.Request) {
+        w.Write([]byte("welcome"))
 }
 
 
