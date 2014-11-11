@@ -125,10 +125,7 @@ func sendHeartbeat() {
 
         postJSON(endpoint, jsonBlob)
 
-
    }
-
-        //return nil
 
 }
 
