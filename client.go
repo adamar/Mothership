@@ -35,6 +35,9 @@ type ProcEnd struct {
 }
 
 
+var UUID = genUuid()
+
+
 func main() {
 
 	switch {
@@ -63,19 +66,16 @@ func main() {
 
 
 
-func genUuid() (string, error) {
+func genUuid() string {
 	out, err := exec.Command("uuidgen").Output()
 	if err != nil {
-		return "", err
+		return ""
 	}
-        return string(out), nil
+        return string(out)
 }
 
 
 func startCom(cmd []string) error {
-
-        // Generate UUID
-        uuid, _ := genUuid()
 
         // Get IP
         ip, _ := getIP()
@@ -87,7 +87,7 @@ func startCom(cmd []string) error {
         hostname, _ := os.Hostname()
 
         blob := ProcStart{
-                UUID: uuid,
+                UUID: UUID,
                 LocalTime: "12:02",
                 Command: cmdstring,
                 Hostname: hostname,
