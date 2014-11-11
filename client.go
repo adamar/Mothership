@@ -9,6 +9,7 @@ import (
 	"os/exec"
         "net"
         "strings"
+        "time"
 )
 
 
@@ -50,6 +51,7 @@ func main() {
 	case len(os.Args) > 2:
 
                 startCom(os.Args[1:])
+                go sendHeartbeat()
 		args := []string(os.Args[2:])
 		data, err := exec.Command(os.Args[1], args...).CombinedOutput()
                 log.Print(err)
@@ -104,19 +106,29 @@ func startCom(cmd []string) error {
 }
 
 
-func sendHeartbeat() error {
+func sendHeartbeat() {
+
+
+    c := time.Tick(1 * time.Minute)
+    for _ = range c {
+
 
         blob := Heartbeat{
-                Ping: ""
+                Ping: "",
         }
 
         endpoint := "/heartbeat"
         jsonBlob, err := json.Marshal(blob)
         if err != nil {
-            return err
+            log.Print(err)
         }
 
         postJSON(endpoint, jsonBlob)
+
+
+   }
+
+        //return nil
 
 }
 
