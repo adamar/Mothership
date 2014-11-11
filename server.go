@@ -6,6 +6,7 @@ import (
 	"net/http"
         "log"
         "io/ioutil"
+        "github.com/unrolled/render"
 )
 
 
@@ -52,8 +53,16 @@ func handleEnd(w http.ResponseWriter, req *http.Request) {
 }
 
 
-func handleMainpage( w http.ResponseWriter, req *http.Request) {
-        w.Write([]byte("welcome"))
+//func handleMainpage( w http.ResponseWriter, req *http.Request) {
+//        w.Write([]byte("welcome"))
+//}
+
+
+func SimplePage(w http.ResponseWriter, req *http.Request, template string) {
+
+        r := render.New(render.Options{})
+        r.HTML(w, http.StatusOK, template, nil)
+
 }
 
 
