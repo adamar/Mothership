@@ -104,6 +104,23 @@ func startCom(cmd []string) error {
 }
 
 
+func sendHeartbeat() error {
+
+        blob := Heartbeat{
+                Ping: ""
+        }
+
+        endpoint := "/heartbeat"
+        jsonBlob, err := json.Marshal(blob)
+        if err != nil {
+            return err
+        }
+
+        postJSON(endpoint, jsonBlob)
+
+}
+
+
 func postJSON(endpoint string, jsonBlob []byte) {
 
 	url := "http://localhost:8080" + endpoint
