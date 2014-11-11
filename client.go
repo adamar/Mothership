@@ -114,7 +114,7 @@ func sendHeartbeat() {
 
 
         blob := Heartbeat{
-                Ping: "",
+                Ping: string(time.Now().Format(time.RFC3339)),
         }
 
         endpoint := "/heartbeat"
