@@ -72,7 +72,11 @@ func genUuid() string {
 	if err != nil {
 		return ""
 	}
-        return string(out)
+
+        var fixed string
+        fixed = strings.Replace(string(out), "\n","", -1)
+
+        return fixed
 }
 
 
