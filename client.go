@@ -88,12 +88,15 @@ func startCom(cmd []string) error {
         // Get Command and Args
         cmdstring := strings.Join(cmd, " ")
 
+        // Get Current Time
+        curTime := string(time.Now().Format(time.RFC3339))
+
         // Get Hostname
         hostname, _ := os.Hostname()
 
         blob := ProcStart{
                 UUID: UUID,
-                LocalTime: "12:02",
+                LocalTime: curTime,
                 Command: cmdstring,
                 Hostname: hostname,
                 IPaddress: ip,
