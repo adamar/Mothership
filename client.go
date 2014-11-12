@@ -24,6 +24,7 @@ type ProcStart struct {
 
 
 type Heartbeat struct {
+    UUID         string `json:"uuid"` 
     Ping         string `json:"Ping"`
 }
 
