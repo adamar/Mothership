@@ -63,6 +63,7 @@ func mainHandler(w http.ResponseWriter, req *http.Request) {
 
 
 func main() {
+        http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("static"))))
 	http.HandleFunc("/start", handleStart)
 	http.HandleFunc("/heartbeat", handleHeartbeat)
 	http.HandleFunc("/end", handleEnd)
