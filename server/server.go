@@ -127,12 +127,31 @@ func mainHandler(w http.ResponseWriter, req *http.Request) {
 }
 
 
+func NewBroker() *Broker {
+
+    broker := &Broker{
+        make(map[chan string]bool),
+        make(chan (chan string)),
+        make(chan (chan string)),
+        make(chan string),
+    }
+
+    return broker
+
+}
+
+
+
 func main() {
-	http.HandleFunc("/start", handleStart)
-	http.HandleFunc("/heartbeat", handleHeartbeat)
-	http.HandleFunc("/end", handleEnd)
-        http.HandleFunc("/", mainHandler)
-	http.ListenAndServe(":8080", nil)
+
+    broker.Start()
+    http.Handle("/events/", broker)
+    http.HandleFunc("/start", handleStart)
+    http.HandleFunc("/heartbeat", handleHeartbeat)
+    http.HandleFunc("/end", handleEnd)
+    http.HandleFunc("/", mainHandler)
+    http.ListenAndServe(":8080", nil)
+
 }
 
 
