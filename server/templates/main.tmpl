@@ -144,7 +144,21 @@ footer {
         <script type='text/javascript' src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
         <script type='text/javascript' src="//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
 
+        <script type="text/javascript">
 
+            console.log("startted");
+            var source = new EventSource('/events/');
+            source.onmessage = function(e) {
+
+                
+                var proc = jQuery.parseJSON(e.data);
+                console.log(proc);
+                $("#procs tbody").append('<tr id="' + proc.uuid  + '"><td>' + proc.uuid + '</td><td>' + proc.command + 
+                                         '</td><td>' + proc.localtime + '</td><td>' + proc.ipaddress 
+                                         + '</td><td>' + proc.hostname + '</td></tr>');
+
+            };
+        </script>
         
     </body>
 </html>
