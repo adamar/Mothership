@@ -4,6 +4,7 @@ package main
 import (
 	"net/http"
         "log"
+        "fmt"
         "io/ioutil"
         "github.com/unrolled/render"
 )
@@ -82,6 +83,7 @@ func handleStart(w http.ResponseWriter, req *http.Request) {
             log.Print(err)
          }
          log.Print(string(body))
+         broker.messages <- string(body)
          w.Write([]byte("status"))
      } else {
          w.Write([]byte("error, do post"))
@@ -96,6 +98,7 @@ func handleHeartbeat(w http.ResponseWriter, req *http.Request) {
             log.Print(err)
          }
          log.Print(string(body))
+         broker.messages <- string(body)
          w.Write([]byte("status"))
      } else {
          w.Write([]byte("error, do post"))
@@ -110,6 +113,7 @@ func handleEnd(w http.ResponseWriter, req *http.Request) {
             log.Print(err)
          }
          log.Print(string(body))
+         broker.messages <- string(body)
          w.Write([]byte("status"))
      } else {
          w.Write([]byte("error, do post"))
