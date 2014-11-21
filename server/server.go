@@ -145,11 +145,14 @@ func NewBroker() *Broker {
 func main() {
 
     broker.Start()
+
     http.Handle("/events/", broker)
     http.HandleFunc("/start", handleStart)
     http.HandleFunc("/heartbeat", handleHeartbeat)
     http.HandleFunc("/end", handleEnd)
     http.HandleFunc("/", mainHandler)
+    http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("static"))))
+
     http.ListenAndServe(":8080", nil)
 
 }
