@@ -1,4 +1,3 @@
-
 package main
 
 
@@ -8,6 +7,42 @@ import (
         "io/ioutil"
         "github.com/unrolled/render"
 )
+
+
+type Broker struct {
+    clients         map[chan string]bool
+    newClients      chan chan string
+    defunctClients  chan chan string
+    messages        chan string
+}
+
+
+var broker *Broker = NewBroker()
+
+
+func (b *Broker) Start() {
+    go func() {
+        for {
+            select {
+            case s := <-b.newClients:
+                b.clients[s] = true
+                log.Println("Added new client")
+
+            case s := <-b.defunctClients:
+                delete(b.clients, s)
+                log.Println("Removed client")
+
+            case msg := <-b.messages:
+                for s, _ := range b.clients {
+                    s <- msg
+                }
+                log.Printf("Broadcast message to %d clients", len(b.clients))
+	    }
+        }
+    }()
+}
+
+
 
 
 func handleStart(w http.ResponseWriter, req *http.Request) {
@@ -63,15 +98,11 @@ func mainHandler(w http.ResponseWriter, req *http.Request) {
 
 
 func main() {
-        http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("static"))))
 	http.HandleFunc("/start", handleStart)
 	http.HandleFunc("/heartbeat", handleHeartbeat)
 	http.HandleFunc("/end", handleEnd)
         http.HandleFunc("/", mainHandler)
 	http.ListenAndServe(":8080", nil)
 }
-
-
-
 
 
