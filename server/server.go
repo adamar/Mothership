@@ -43,6 +43,36 @@ func (b *Broker) Start() {
 }
 
 
+func (b *Broker) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+
+    f, ok := w.(http.Flusher)
+    if !ok {
+        http.Error(w, "Streaming unsupported!", http.StatusInternalServerError)
+        return
+    }
+
+    messageChan := make(chan string)
+
+    b.newClients <- messageChan
+
+    defer func() {
+        b.defunctClients <- messageChan
+    }()
+
+    w.Header().Set("Content-Type", "text/event-stream")
+    w.Header().Set("Cache-Control", "no-cache")
+    w.Header().Set("Connection", "keep-alive")
+
+    for i := 0; i < 10; i++ {
+        msg := <-messageChan
+        fmt.Fprintf(w, "data: %s\n\n", msg)
+        //fmt.Fprint(w, msg)
+        f.Flush()
+    }
+
+    log.Println("Finished HTTP request at ", r.URL.Path)
+}
+
 
 
 func handleStart(w http.ResponseWriter, req *http.Request) {
