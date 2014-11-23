@@ -157,7 +157,10 @@ func main() {
     http.HandleFunc("/", mainHandler)
     http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("static"))))
 
-    http.ListenAndServe(":8080", nil)
+    serverAdd := ":8080"
+    fmt.Printf("Server listening on %s\n", serverAdd)
+
+    http.ListenAndServe(serverAdd, nil)
 
 }
 
