@@ -157,9 +157,13 @@ footer {
 
             var handleHeartbeat = function(m) {
 
+                console.log(m);
+
             }
 
             var handleEnd = function(m) {
+
+                console.log(m);
 
             }
 
@@ -178,7 +182,7 @@ footer {
                 handleStart(proc.body);
                 break;
               case 'heartbeat': 
-                handlerHeartbeat(proc.body);
+                handleHeartbeat(proc.body);
                 break;
               case 'end': 
                 handleEnd(proc.body);
