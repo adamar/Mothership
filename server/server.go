@@ -83,7 +83,8 @@ func handleStart(w http.ResponseWriter, req *http.Request) {
             log.Print(err)
          }
          log.Print(string(body))
-         broker.messages <- string(body)
+         data := `{"type":"start","body":` + string(body) + `}`
+         broker.messages <- data
          w.Write([]byte("status"))
      } else {
          w.Write([]byte("error, do post"))
@@ -98,7 +99,8 @@ func handleHeartbeat(w http.ResponseWriter, req *http.Request) {
             log.Print(err)
          }
          log.Print(string(body))
-         broker.messages <- string(body)
+         data := `{"type":"heartbeat","body":` + string(body) + `}`
+         broker.messages <- data
          w.Write([]byte("status"))
      } else {
          w.Write([]byte("error, do post"))
@@ -113,7 +115,8 @@ func handleEnd(w http.ResponseWriter, req *http.Request) {
             log.Print(err)
          }
          log.Print(string(body))
-         broker.messages <- string(body)
+         data := `{"type":"end","body":` + string(body) + `}`
+         broker.messages <- data
          w.Write([]byte("status"))
      } else {
          w.Write([]byte("error, do post"))
