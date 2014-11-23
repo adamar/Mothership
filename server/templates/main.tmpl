@@ -148,13 +148,22 @@ footer {
 
 
 
-            var handleStart = function(proc) {
-                console.log(proc);
-                $("#procs tbody").append('<tr id="' + proc.uuid  + '"><td>' + proc.uuid + '</td><td>' + proc.command + 
-                                         '</td><td>' + proc.localtime + '</td><td>' + proc.ipaddress 
-                                         + '</td><td>' + proc.hostname + '</td></tr>');
+            var handleStart = function(m) {
+                $("#procs tbody").append('<tr id="' + m.uuid  + '"><td>' + m.uuid + '</td><td>' + m.command + 
+                                         '</td><td>' + m.localtime + '</td><td>' + m.ipaddress 
+                                         + '</td><td>' + m.hostname + '</td></tr>');
 
             }
+
+            var handleHeartbeat = function(m) {
+
+            }
+
+            var handleEnd = function(m) {
+
+            }
+
+
 
 
 
@@ -168,9 +177,11 @@ footer {
               case 'start': 
                 handleStart(proc.body);
                 break;
-              case 'heartbeat': handlerHeartbeat
+              case 'heartbeat': 
+                handlerHeartbeat(proc.body);
                 break;
-              case 'end': handleEnd;
+              case 'end': 
+                handleEnd(proc.body);
                 break;
               default: console.log("Fail");
             }
