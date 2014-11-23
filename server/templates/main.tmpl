@@ -146,16 +146,38 @@ footer {
 
         <script type="text/javascript">
 
-            console.log("startted");
-            var source = new EventSource('/events/');
-            source.onmessage = function(e) {
 
-                
-                var proc = jQuery.parseJSON(e.data);
+
+            var handleStart = function(proc) {
                 console.log(proc);
                 $("#procs tbody").append('<tr id="' + proc.uuid  + '"><td>' + proc.uuid + '</td><td>' + proc.command + 
                                          '</td><td>' + proc.localtime + '</td><td>' + proc.ipaddress 
                                          + '</td><td>' + proc.hostname + '</td></tr>');
+
+            }
+
+
+
+            var source = new EventSource('/events/');
+            source.onmessage = function(e) {
+
+            var proc = jQuery.parseJSON(e.data);  
+
+            switch (proc.type)
+            {
+              case 'start': 
+                handleStart(proc.body);
+                break;
+              case 'heartbeat': handlerHeartbeat
+                break;
+              case 'end': handleEnd;
+                break;
+              default: console.log("Fail");
+            }
+
+
+
+
 
             };
         </script>
