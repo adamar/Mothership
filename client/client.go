@@ -46,8 +46,8 @@ func main() {
 		log.Print("nothing to run")
 
 	case len(os.Args) == 2:
-		log.Print("run single command without args or flags")
 
+                go sendHeartBeat()
 		data, err := exec.Command(os.Args[1]).CombinedOutput()
                 log.Print(err)
                 log.Print(string(data))
