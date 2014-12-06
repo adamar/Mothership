@@ -80,6 +80,25 @@ func genUuid() string {
 }
 
 
+
+func runningTime(startingTime time.Time, endingTime time.Time) string {
+
+        var duration time.Duration = endingTime.Sub(startingTime) 
+
+        durationMs := int64(duration / 1000000)
+        durationMin := durationMs / 1000 / 60 % 60
+        durationHr := durationMs / 1000 / 60 / 60 % 24
+
+        if durationMin > 60 {
+            return strconv.FormatInt(durationHr, 10) + " hr"
+        }
+
+        return strconv.FormatInt(durationMin, 10) + " min"
+
+}
+
+
+
 func startCom(cmd []string) error {
 
         // Get IP
@@ -116,10 +135,14 @@ func startCom(cmd []string) error {
 
 func sendHeartbeat() {
 
+    startingTime := time.Now().UTC() 
 
     c := time.Tick(1 * time.Minute)
     for _ = range c {
 
+        endingTime := time.Now().UTC()
+
+        runningTime := runningTime(startingTime, endingTime)
 
         blob := Heartbeat{
                 Ping: string(time.Now().Format(time.RFC3339)),
