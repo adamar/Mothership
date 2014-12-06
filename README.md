@@ -20,6 +20,13 @@ Client:
 
 
 
+## To do
+
+ - Add config file and config parser
+ - Gracefully handle failed connections
+ - Add return codes and messages
+ 
+
 
 
 
