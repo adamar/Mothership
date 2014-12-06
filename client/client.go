@@ -165,7 +165,7 @@ func sendHeartbeat() {
 }
 
 
-func postJSON(endpoint string, jsonBlob []byte) {
+func postJSON(endpoint string, jsonBlob []byte) error {
 
 	url := "http://localhost:8080" + endpoint
 	req, _ := http.NewRequest("POST", url, bytes.NewBuffer(jsonBlob))
@@ -174,8 +174,13 @@ func postJSON(endpoint string, jsonBlob []byte) {
 	req.Header.Set("Content-Type", "application/json")
 
 	client := &http.Client{}
-	resp, _ := client.Do(req)
+	resp, err := client.Do(req)
+        if err != nil
+            return err
+        }
+
 	defer resp.Body.Close()
+        return nil
 
 }
 
