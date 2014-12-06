@@ -24,8 +24,9 @@ type ProcStart struct {
 
 
 type Heartbeat struct {
-    UUID         string `json:"uuid"` 
+    UUID         string `json:"uuid"`
     Ping         string `json:"Ping"`
+    RunningTime  string `json:"RunningTime"`
 }
 
 
@@ -147,6 +148,7 @@ func sendHeartbeat() {
         blob := Heartbeat{
                 Ping: string(time.Now().Format(time.RFC3339)),
                 UUID: UUID,
+                RunningTime: runningTime,
         }
 
         endpoint := "/heartbeat"
