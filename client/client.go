@@ -130,7 +130,11 @@ func startCom(cmd []string) error {
             return err
         }
 
-        postJSON(endpoint, jsonBlob)
+        err = postJSON(endpoint, jsonBlob)
+        if err != nil {
+             log.Print("Failed to connect to MotherShip")
+        }
+
         return nil
 }
 
@@ -158,7 +162,11 @@ func sendHeartbeat() {
             log.Print(err)
         }
 
-        postJSON(endpoint, jsonBlob)
+        err = postJSON(endpoint, jsonBlob)
+        if err != nil {
+             log.Print("Failed to connect to MotherShip")
+        }
+
 
    }
 
@@ -175,7 +183,7 @@ func postJSON(endpoint string, jsonBlob []byte) error {
 
 	client := &http.Client{}
 	resp, err := client.Do(req)
-        if err != nil
+        if err != nil {
             return err
         }
 
