@@ -10,6 +10,7 @@ import (
         "net"
         "strings"
         "time"
+        "strconv"
 )
 
 
@@ -26,7 +27,7 @@ type ProcStart struct {
 type Heartbeat struct {
     UUID         string `json:"uuid"`
     Ping         string `json:"Ping"`
-    RunningTime  string `json:"RunningTime"`
+    RunningTime  string `json:"runningtime"`
 }
 
 
@@ -48,7 +49,7 @@ func main() {
 
 	case len(os.Args) == 2:
 
-                go sendHeartBeat()
+                go sendHeartbeat()
 		data, err := exec.Command(os.Args[1]).CombinedOutput()
                 log.Print(err)
                 log.Print(string(data))
@@ -138,7 +139,7 @@ func sendHeartbeat() {
 
     startingTime := time.Now().UTC() 
 
-    c := time.Tick(1 * time.Minute)
+    c := time.Tick(60 * time.Second)
     for _ = range c {
 
         endingTime := time.Now().UTC()
