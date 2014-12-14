@@ -39,20 +39,27 @@ type ProcEnd struct {
 
 
 var UUID = genUuid()
+var debug = checkDebugStatus()
+
+
 
 
 func main() {
 
 	switch {
 	case len(os.Args) == 1:
-		log.Print("nothing to run")
+		if debug == true {
+			log.Print("nothing to run")
+		}
 
 	case len(os.Args) == 2:
 
                 go sendHeartbeat()
 		data, err := exec.Command(os.Args[1]).CombinedOutput()
-                log.Print(err)
-                log.Print(string(data))
+		if debug == true {
+                	log.Print(err)
+                	log.Print(string(data))
+		}
 
 	case len(os.Args) > 2:
 
@@ -60,8 +67,11 @@ func main() {
                 go sendHeartbeat()
 		args := []string(os.Args[2:])
 		data, err := exec.Command(os.Args[1], args...).CombinedOutput()
-                log.Print(err)
-                log.Print(string(data))
+		if debug == true {
+                	log.Print(err)
+                	log.Print(string(data))
+		}
+
 	}
 
 }
