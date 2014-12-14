@@ -19,6 +19,7 @@ type Broker struct {
 
 
 var broker *Broker = NewBroker()
+var debug = checkDebugStatus()
 
 
 func (b *Broker) Start() {
@@ -41,6 +42,16 @@ func (b *Broker) Start() {
 	    }
         }
     }()
+}
+
+func checkDebugStatus() bool {
+
+    if os.Getenv("DEBUG") == "TRUE" {
+        return true
+    }
+
+    return false
+
 }
 
 
