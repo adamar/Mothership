@@ -28,17 +28,24 @@ func (b *Broker) Start() {
             select {
             case s := <-b.newClients:
                 b.clients[s] = true
-                log.Println("Added new client")
+                if debug == "TRUE" {
+                    log.Println("Added new client")
+                }
 
             case s := <-b.defunctClients:
                 delete(b.clients, s)
-                log.Println("Removed client")
+                if debug == "TRUE" {
+                    log.Println("Removed client")
+                }
 
             case msg := <-b.messages:
                 for s, _ := range b.clients {
                     s <- msg
                 }
-                log.Printf("Broadcast message to %d clients", len(b.clients))
+                if debug == "TRUE" {
+                    log.Printf("Broadcast message to %d clients", len(b.clients))
+                }
+
 	    }
         }
     }()
@@ -78,7 +85,6 @@ func (b *Broker) ServeHTTP(w http.ResponseWriter, r *http.Request) {
     for i := 0; i < 10; i++ {
         msg := <-messageChan
         fmt.Fprintf(w, "data: %s\n\n", msg)
-        //fmt.Fprint(w, msg)
         f.Flush()
     }
 
@@ -93,7 +99,11 @@ func handleStart(w http.ResponseWriter, req *http.Request) {
          if err != nil {
             log.Print(err)
          }
-         log.Print(string(body))
+
+         if debug == "TRUE" {
+             log.Print(string(body))
+         }
+
          data := `{"type":"start","body":` + string(body) + `}`
          broker.messages <- data
          w.Write([]byte("status"))
@@ -109,7 +119,10 @@ func handleHeartbeat(w http.ResponseWriter, req *http.Request) {
          if err != nil {
             log.Print(err)
          }
-         log.Print(string(body))
+         if debug == "TRUE" {
+             log.Print(string(body))
+         }
+
          data := `{"type":"heartbeat","body":` + string(body) + `}`
          broker.messages <- data
          w.Write([]byte("status"))
@@ -125,7 +138,10 @@ func handleEnd(w http.ResponseWriter, req *http.Request) {
          if err != nil {
             log.Print(err)
          }
-         log.Print(string(body))
+         if debug == "TRUE" {
+             log.Print(string(body))
+         }
+
          data := `{"type":"end","body":` + string(body) + `}`
          broker.messages <- data
          w.Write([]byte("status"))
