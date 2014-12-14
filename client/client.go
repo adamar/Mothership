@@ -67,6 +67,15 @@ func main() {
 }
 
 
+func checkDebugStatus() bool {
+
+    if os.Getenv("DEBUG") == "TRUE" {
+        return true
+    }
+
+    return false
+
+}
 
 
 func genUuid() string {
@@ -141,7 +150,7 @@ func startCom(cmd []string) error {
 
 func sendHeartbeat() {
 
-    startingTime := time.Now().UTC() 
+    startingTime := time.Now().UTC()
 
     c := time.Tick(60 * time.Second)
     for _ = range c {
