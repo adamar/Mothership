@@ -7,6 +7,7 @@ import (
         "fmt"
         "io/ioutil"
         "github.com/unrolled/render"
+        "os"
 )
 
 
@@ -28,13 +29,13 @@ func (b *Broker) Start() {
             select {
             case s := <-b.newClients:
                 b.clients[s] = true
-                if debug == "TRUE" {
+                if debug == true {
                     log.Println("Added new client")
                 }
 
             case s := <-b.defunctClients:
                 delete(b.clients, s)
-                if debug == "TRUE" {
+                if debug == true {
                     log.Println("Removed client")
                 }
 
@@ -42,7 +43,7 @@ func (b *Broker) Start() {
                 for s, _ := range b.clients {
                     s <- msg
                 }
-                if debug == "TRUE" {
+                if debug == true {
                     log.Printf("Broadcast message to %d clients", len(b.clients))
                 }
 
@@ -100,7 +101,7 @@ func handleStart(w http.ResponseWriter, req *http.Request) {
             log.Print(err)
          }
 
-         if debug == "TRUE" {
+         if debug == true {
              log.Print(string(body))
          }
 
@@ -119,7 +120,7 @@ func handleHeartbeat(w http.ResponseWriter, req *http.Request) {
          if err != nil {
             log.Print(err)
          }
-         if debug == "TRUE" {
+         if debug == true {
              log.Print(string(body))
          }
 
@@ -138,7 +139,7 @@ func handleEnd(w http.ResponseWriter, req *http.Request) {
          if err != nil {
             log.Print(err)
          }
-         if debug == "TRUE" {
+         if debug == true {
              log.Print(string(body))
          }
 
