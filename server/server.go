@@ -179,6 +179,30 @@ func NewBroker() *Broker {
 
 
 
+func writeDB(bucket []byte, key []byte, value []byte) err {
+
+    err = db.Update(func(tx *bolt.Tx) error {
+        bucket, err := tx.CreateBucketIfNotExists(world)
+        if err != nil {
+            return err
+        }
+
+        err = bucket.Put(key, value)
+        if err != nil {
+            return err
+        }
+        return nil
+    })
+
+    if err != nil {
+        log.Fatal(err)
+    }
+
+}
+
+
+
+
 func main() {
 
     procDB, err := bolt.Open("bolt.db", 0644, nil)
