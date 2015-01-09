@@ -8,6 +8,7 @@ import (
     "io/ioutil"
     "github.com/unrolled/render"
     "os"
+    "github.com/boltdb/bolt"
 )
 
 
@@ -21,6 +22,7 @@ type Broker struct {
 
 var broker *Broker = NewBroker()
 var debug = checkDebugStatus()
+var procDB *bolt.DB
 
 
 func (b *Broker) Start() {
@@ -178,6 +180,12 @@ func NewBroker() *Broker {
 
 
 func main() {
+
+    procDB, err := bolt.Open("bolt.db", 0644, nil)
+    if err != nil {
+        log.Fatal(err)
+    }
+    defer procDB.Close()
 
     broker.Start()
 
