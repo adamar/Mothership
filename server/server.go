@@ -181,16 +181,34 @@ func NewBroker() *Broker {
 
 func Put(bucket []byte, key []byte, value []byte) error {
 
-    db.Update(func(tx *bolt.Tx) error {
+    err := procDB.Update(func(tx *bolt.Tx) error {
         b := tx.Bucket(bucket)
         err := b.Put(key, value)
         return err
     }) 
 
+    if err != nil {
+        return err
+    }
+
     return nil
 
 }
 
+
+func Get(bucket []byte, key []byte) []byte {
+
+    var val []byte
+
+    procDB.View(func(tx *bolt.Tx) error {
+        b := tx.Bucket(bucket)
+        val = b.Get(key)
+        return nil
+    })
+
+    return val
+
+}
 
 func setupDB() *bolt.DB {
 
@@ -199,8 +217,8 @@ func setupDB() *bolt.DB {
         log.Fatal(err)
     }
 
-    Update(func(tx *bolt.Tx) error {
-        b, err := tx.CreateBucket([]byte("Procs"))
+    DB.Update(func(tx *bolt.Tx) error {
+        _, err := tx.CreateBucket([]byte("Procs"))
         if err != nil {
             return fmt.Errorf("create bucket: %s", err)
         }
@@ -214,7 +232,7 @@ func setupDB() *bolt.DB {
 
 func main() {
 
-
+  
     broker.Start()
 
     http.Handle("/events/", broker)
