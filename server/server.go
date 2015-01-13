@@ -179,7 +179,7 @@ func NewBroker() *Broker {
 
 
 
-func writeDB(bucket []byte, key []byte, value []byte) error {
+func Put(bucket []byte, key []byte, value []byte) error {
 
     err := procDB.Update(func(tx *bolt.Tx) error {
         bucket, err := tx.CreateBucketIfNotExists(bucket)
@@ -209,6 +209,14 @@ func setupDB() *bolt.DB {
     if err != nil {
         log.Fatal(err)
     }
+
+    DB.Update(func(tx *bolt.Tx) error {
+        b, err := tx.CreateBucket([]byte("MyBucket"))
+        if err != nil {
+            return fmt.Errorf("create bucket: %s", err)
+        }
+        return nil
+    })
 
     return DB
 
