@@ -211,10 +211,22 @@ func Get(bucket []byte, key []byte) []byte {
 }
 
 
-func GetMany(bucket []byte, key []byte) []byte {
+func GetMany(bucket []byte) map[string]string {
 
+    vals := make(map[string]string)
 
+    procDB.View(func(tx *bolt.Tx) error {
+        b := tx.Bucket(bucket)
+        c := b.Cursor()
 
+        for k, v := c.First(); k != nil; k, v = c.Next() {
+            vals[string(k)] = string(v)
+        }
+
+        return nil
+    })
+
+    return vals
 
 }
 
