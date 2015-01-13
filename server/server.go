@@ -22,7 +22,7 @@ type Broker struct {
 
 var broker *Broker = NewBroker()
 var debug = checkDebugStatus()
-var procDB *bolt.DB
+var procDB = setupDB()
 
 
 func (b *Broker) Start() {
@@ -203,15 +203,20 @@ func writeDB(bucket []byte, key []byte, value []byte) error {
 }
 
 
+func setupDB() *bolt.DB {
+
+    DB, err := bolt.Open("bolt.db", 0644, nil)
+    if err != nil {
+        log.Fatal(err)
+    }
+
+    return DB
+
+}
 
 
 func main() {
 
-    procDB, err := bolt.Open("bolt.db", 0644, nil)
-    if err != nil {
-        log.Fatal(err)
-    }
-    defer procDB.Close()
 
     broker.Start()
 
