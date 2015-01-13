@@ -181,22 +181,11 @@ func NewBroker() *Broker {
 
 func Put(bucket []byte, key []byte, value []byte) error {
 
-    err := procDB.Update(func(tx *bolt.Tx) error {
-        bucket, err := tx.CreateBucketIfNotExists(bucket)
-        if err != nil {
-            return err
-        }
-
-        err = bucket.Put(key, value)
-        if err != nil {
-            return err
-        }
-        return nil
-    })
-
-    if err != nil {
-        log.Fatal(err)
-    }
+    db.Update(func(tx *bolt.Tx) error {
+        b := tx.Bucket(bucket)
+        err := b.Put(key, value)
+        return err
+    }) 
 
     return nil
 
@@ -210,8 +199,8 @@ func setupDB() *bolt.DB {
         log.Fatal(err)
     }
 
-    DB.Update(func(tx *bolt.Tx) error {
-        b, err := tx.CreateBucket([]byte("MyBucket"))
+    Update(func(tx *bolt.Tx) error {
+        b, err := tx.CreateBucket([]byte("Procs"))
         if err != nil {
             return fmt.Errorf("create bucket: %s", err)
         }
