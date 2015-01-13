@@ -210,6 +210,16 @@ func Get(bucket []byte, key []byte) []byte {
 
 }
 
+
+func GetMany(bucket []byte, key []byte) []byte {
+
+
+
+
+}
+
+
+
 func setupDB() *bolt.DB {
 
     DB, err := bolt.Open("bolt.db", 0644, nil)
