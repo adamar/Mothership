@@ -211,6 +211,27 @@ func Get(bucket []byte, key []byte) []byte {
 }
 
 
+func Delete(bucket []byte, key []byte) error {
+
+    err := procDB.View(func(tx *bolt.Tx) error {
+        b := tx.Bucket(bucket)
+        err = b.Delete(key)
+        if err != nil {
+            return err
+        }
+        return nil
+    })
+
+    if err != nil {
+        return err
+    }
+
+    return nil
+
+}
+
+
+
 func GetMany(bucket []byte) map[string]string {
 
     vals := make(map[string]string)
