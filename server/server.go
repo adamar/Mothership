@@ -50,6 +50,7 @@ var broker *Broker = NewBroker()
 var debug = checkDebugStatus()
 var procDB = setupDB()
 var procs = []byte("processes")
+var defunctprocs = []byte("defunctprocesses")
 
 
 func (b *Broker) Start() {
@@ -135,13 +136,7 @@ func handleStart(w http.ResponseWriter, req *http.Request) {
              log.Print(err)
          }
 
-         log.Print(out.UUID)
          Put(procs, []byte(out.UUID), body)
-
-
-         //if debug == true {
-             log.Print(string(body))
-         //}
 
          data := `{"type":"start","body":` + string(body) + `}`
          broker.messages <- data
@@ -177,9 +172,15 @@ func handleEnd(w http.ResponseWriter, req *http.Request) {
          if err != nil {
             log.Print(err)
          }
-         if debug == true {
-             log.Print(string(body))
+
+         out, err := unmarshalEnd(body)
+         if err != nil {
+             log.Print(err)
          }
+
+         Delete(procs, []byte(out.UUID))
+         Put(defunctprocs, []byte(out.UUID), body)
+
 
          data := `{"type":"end","body":` + string(body) + `}`
          broker.messages <- data
