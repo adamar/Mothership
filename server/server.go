@@ -187,22 +187,18 @@ func handleEnd(w http.ResponseWriter, req *http.Request) {
 }
 
 
-func unmarshalStart(data []byte) *ProcStart {
+func unmarshalStart(data []byte) (*ProcStart, err) {
 
     start := &ProcStart
     
     if err := json.Unmarshal(data, &start); err != nil {
-        panic(err)
+        return nil, err
     }
-    return dat
+    return dat, nil
 
 }
 
 
-func validateJSON(jdata []byte) bool {
-    var jmap map[string]interface{}
-    return json.Unmarshal(jdata, &jmap) == nil
-}
 
 
 func mainHandler(w http.ResponseWriter, req *http.Request) {
