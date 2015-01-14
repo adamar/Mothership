@@ -204,6 +204,17 @@ func unmarshalStart(data []byte) (*ProcStart, error) {
 }
 
 
+func unmarshalEnd(data []byte) (*ProcEnd, error) {
+
+    end := &ProcEnd{}
+
+    if err := json.Unmarshal(data, &end); err != nil {
+        return nil, err
+    }
+    return end, nil
+
+}
+
 
 
 func mainHandler(w http.ResponseWriter, req *http.Request) {
@@ -212,6 +223,18 @@ func mainHandler(w http.ResponseWriter, req *http.Request) {
         r.HTML(w, http.StatusOK, "main", nil)
 
 }
+
+
+func defunctHandler(w http.ResponseWriter, req *http.Request) {
+
+        data := GetMany(defunctprocs)
+        log.Print(data)
+        r := render.New(render.Options{})
+        r.HTML(w, http.StatusOK, "defunct", data)
+
+}
+
+
 
 
 func NewBroker() *Broker {
@@ -318,6 +341,15 @@ func setupDB() *bolt.DB {
         return nil
     })
 
+    DB.Update(func(tx *bolt.Tx) error {
+        _, err := tx.CreateBucket(defunctprocs)
+        if err != nil {
+            return fmt.Errorf("create bucket: %s", err)
+        }
+        return nil
+    })
+
+
     return DB
 
 }
@@ -332,7 +364,10 @@ func main() {
     http.HandleFunc("/start", handleStart)
     http.HandleFunc("/heartbeat", handleHeartbeat)
     http.HandleFunc("/end", handleEnd)
+
     http.HandleFunc("/", mainHandler)
+    http.HandleFunc("/defunct", defunctHandler)
+ 
     http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("static"))))
 
     serverAdd := ":8080"

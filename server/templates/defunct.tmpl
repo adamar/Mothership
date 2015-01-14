@@ -101,8 +101,8 @@ footer {
          <div class="col-sm-3 col-md-2 sidebar-offcanvas" id="sidebar" role="navigation">
            
             <ul class="nav nav-sidebar">
-              <li class="active"><a href="/">Processes</a></li>
-              <li><a href="/defunct">Finished Processes</a></li>
+              <li><a href="/">Processes</a></li>
+              <li class="active"><a href="/defunct">Finished Processes</a></li>
               <li><a href="#">Statistics</a></li>
             </ul>
           
@@ -130,6 +130,13 @@ footer {
                 </tr>
               </thead>
               <tbody>
+
+              {{ range . }}
+
+                <tr id="asxasx"><td></td><td>blah</td><td id="time"> - </td><td>10.0.0.1</td><td>server</td></tr>
+
+              {{ end }}
+
               </tbody>
             </table>
           </div>
@@ -144,60 +151,6 @@ footer {
         
         <script type='text/javascript' src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
         <script type='text/javascript' src="//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
-
-        <script type="text/javascript">
-
-
-
-            var handleStart = function(m) {
-                $("#procs tbody").append('<tr id="' + m.uuid  + '"><td>' + m.uuid + '</td><td>' + m.command + 
-                                         '</td><td id="time"> - </td><td>' + m.ipaddress 
-                                         + '</td><td>' + m.hostname + '</td></tr>');
-
-            }
-
-            var handleHeartbeat = function(m) {
-
-                var trid ="#procs #" + m.uuid + " #time";
-                $(trid).text(m.runningtime);
-
-            }
-
-            var handleEnd = function(m) {
-
-                console.log(m);
-
-            }
-
-
-
-
-
-            var source = new EventSource('/events/');
-            source.onmessage = function(e) {
-
-            var proc = jQuery.parseJSON(e.data);  
-
-            switch (proc.type)
-            {
-              case 'start': 
-                handleStart(proc.body);
-                break;
-              case 'heartbeat': 
-                handleHeartbeat(proc.body);
-                break;
-              case 'end': 
-                handleEnd(proc.body);
-                break;
-              default: console.log("Fail");
-            }
-
-
-
-
-
-            };
-        </script>
-        
+       
     </body>
 </html>

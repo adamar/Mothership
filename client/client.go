@@ -43,7 +43,6 @@ var debug = checkDebugStatus()
 
 
 
-
 func main() {
 
 	switch {
@@ -63,7 +62,7 @@ func main() {
 
 	case len(os.Args) > 2:
 
-                startCom(os.Args[1:])
+                sendCom(os.Args[1:], "/start")
                 go sendHeartbeat()
 		args := []string(os.Args[2:])
 		data, err := exec.Command(os.Args[1], args...).CombinedOutput()
@@ -73,6 +72,8 @@ func main() {
 		}
 
 	}
+
+    sendCom(os.Args[1:], "/end")
 
 }
 
@@ -120,7 +121,7 @@ func runningTime(startingTime time.Time, endingTime time.Time) string {
 
 
 
-func startCom(cmd []string) error {
+func sendCom(cmd []string, endpoint string) error {
 
         // Get IP
         ip, _ := getIP()
@@ -143,7 +144,6 @@ func startCom(cmd []string) error {
                 Hash: "A736BC202EC3C",
         }
 
-        endpoint := "/start"
         jsonBlob, err := json.Marshal(blob)
         if err != nil {
             return err
