@@ -20,6 +20,30 @@ type Broker struct {
 }
 
 
+type ProcStart struct {
+    UUID         string `json:"uuid"`
+    LocalTime    string `json:"localtime"`
+    Command      string `json:"command"`
+    Hostname     string `json:"hostname"`
+    IPaddress    string `json:"ipaddress"`
+    Hash         string `json:"hash"`
+}
+
+
+type Heartbeat struct {
+    UUID         string `json:"uuid"`
+    Ping         string `json:"Ping"`
+    RunningTime  string `json:"runningtime"`
+}
+
+
+type ProcEnd struct {
+    UUID         string `json:"uuid"`
+    Error        bool   `json:"error"`
+    ExitMessage  string `json:"exitmessage"`
+}
+
+
 
 var broker *Broker = NewBroker()
 var debug = checkDebugStatus()
@@ -104,8 +128,12 @@ func handleStart(w http.ResponseWriter, req *http.Request) {
             log.Print(err)
          }
 
-         if validateJSON(body) {
-             }
+         if validateJSON(body) {    
+             unmarshalStart(body) *ProcStart
+         }
+
+
+
 
          //if debug == true {
              log.Print(string(body))
@@ -155,6 +183,18 @@ func handleEnd(w http.ResponseWriter, req *http.Request) {
      } else {
          w.Write([]byte("error, do post"))
      }
+
+}
+
+
+func unmarshalStart(data []byte) *ProcStart {
+
+    start := &ProcStart
+    
+    if err := json.Unmarshal(data, &start); err != nil {
+        panic(err)
+    }
+    return dat
 
 }
 
