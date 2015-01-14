@@ -20,6 +20,7 @@ type Broker struct {
 }
 
 
+
 var broker *Broker = NewBroker()
 var debug = checkDebugStatus()
 var procDB = setupDB()
@@ -103,9 +104,12 @@ func handleStart(w http.ResponseWriter, req *http.Request) {
             log.Print(err)
          }
 
-         if debug == true {
+         if validateJSON(body) {
+             }
+
+         //if debug == true {
              log.Print(string(body))
-         }
+         //}
 
          data := `{"type":"start","body":` + string(body) + `}`
          broker.messages <- data
@@ -154,6 +158,11 @@ func handleEnd(w http.ResponseWriter, req *http.Request) {
 
 }
 
+
+func validateJSON(jdata []byte) bool {
+    var jmap map[string]interface{}
+    return json.Unmarshal(jdata, &jmap) == nil
+}
 
 
 func mainHandler(w http.ResponseWriter, req *http.Request) {
@@ -215,7 +224,7 @@ func Delete(bucket []byte, key []byte) error {
 
     err := procDB.View(func(tx *bolt.Tx) error {
         b := tx.Bucket(bucket)
-        err = b.Delete(key)
+        err := b.Delete(key)
         if err != nil {
             return err
         }
