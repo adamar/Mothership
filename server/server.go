@@ -8,6 +8,7 @@ import (
     "io/ioutil"
     "github.com/unrolled/render"
     "os"
+    "encoding/json"
     "github.com/boltdb/bolt"
 )
 
@@ -48,6 +49,7 @@ type ProcEnd struct {
 var broker *Broker = NewBroker()
 var debug = checkDebugStatus()
 var procDB = setupDB()
+var procs = []byte("processes")
 
 
 func (b *Broker) Start() {
@@ -128,11 +130,13 @@ func handleStart(w http.ResponseWriter, req *http.Request) {
             log.Print(err)
          }
 
-         if validateJSON(body) {    
-             unmarshalStart(body) *ProcStart
+         out, err := unmarshalStart(body)
+         if err != nil {
+             log.Print(err)
          }
 
-
+         log.Print(out.UUID)
+         Put(procs, []byte(out.UUID), body)
 
 
          //if debug == true {
@@ -187,14 +191,14 @@ func handleEnd(w http.ResponseWriter, req *http.Request) {
 }
 
 
-func unmarshalStart(data []byte) (*ProcStart, err) {
+func unmarshalStart(data []byte) (*ProcStart, error) {
 
-    start := &ProcStart
+    start := &ProcStart{}
     
     if err := json.Unmarshal(data, &start); err != nil {
         return nil, err
     }
-    return dat, nil
+    return start, nil
 
 }
 
@@ -306,7 +310,7 @@ func setupDB() *bolt.DB {
     }
 
     DB.Update(func(tx *bolt.Tx) error {
-        _, err := tx.CreateBucket([]byte("Procs"))
+        _, err := tx.CreateBucket(procs)
         if err != nil {
             return fmt.Errorf("create bucket: %s", err)
         }
