@@ -219,18 +219,18 @@ func unmarshalEnd(data []byte) (*ProcEnd, error) {
 
 func mainHandler(w http.ResponseWriter, req *http.Request) {
 
-        r := render.New(render.Options{})
-        r.HTML(w, http.StatusOK, "main", nil)
+    r := render.New(render.Options{})
+    r.HTML(w, http.StatusOK, "main", nil)
 
 }
 
 
 func defunctHandler(w http.ResponseWriter, req *http.Request) {
 
-        data := GetMany(defunctprocs)
-        log.Print(data)
-        r := render.New(render.Options{})
-        r.HTML(w, http.StatusOK, "defunct", data)
+    data := GetMany(defunctprocs)
+    log.Print(data)
+    r := render.New(render.Options{})
+    r.HTML(w, http.StatusOK, "defunct", data)
 
 }
 
@@ -305,24 +305,28 @@ func Delete(bucket []byte, key []byte) error {
 
 
 
-func GetMany(bucket []byte) map[string]string {
 
-    vals := make(map[string]string)
+func GetMany(bucket []byte) []ProcStart {
+
+    var data []ProcStart
+    var p ProcStart
 
     procDB.View(func(tx *bolt.Tx) error {
         b := tx.Bucket(bucket)
         c := b.Cursor()
 
         for k, v := c.First(); k != nil; k, v = c.Next() {
-            vals[string(k)] = string(v)
+            json.Unmarshal(v, &p)
+            data = append(data, p)
         }
 
         return nil
     })
 
-    return vals
+    return data
 
 }
+
 
 
 

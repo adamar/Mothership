@@ -133,7 +133,7 @@ footer {
 
               {{ range . }}
 
-                <tr id="asxasx"><td></td><td>blah</td><td id="time"> - </td><td>10.0.0.1</td><td>server</td></tr>
+                <tr id="asxasx"><td>{{ .UUID }}</td><td>{{ .Command }}</td><td id="time"> - </td><td>{{ .IPaddress }}</td><td>{{ .Hostname }}</td></tr>
 
               {{ end }}
 
