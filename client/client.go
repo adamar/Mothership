@@ -12,6 +12,7 @@ import (
     "time"
     "strconv"
     "io/ioutil"
+    "io"
 )
 
 
@@ -48,40 +49,71 @@ type Config struct{
 
 var UUID = genUuid()
 var debug = checkDebugStatus()
-
+var conf = parseConfig()
 
 
 func main() {
 
-    parseConfig()
+    switch {
+    case len(os.Args) == 1:
+        if debug == true {
+            log.Print("nothing to run")
+        }
 
-	switch {
-	case len(os.Args) == 1:
-		if debug == true {
-			log.Print("nothing to run")
-		}
+    case len(os.Args) == 2:
 
-	case len(os.Args) == 2:
+        go sendHeartbeat()
+        cmd := exec.Command(os.Args[1])
 
-                go sendHeartbeat()
-		data, err := exec.Command(os.Args[1]).CombinedOutput()
-		if debug == true {
-                	log.Print(err)
-                	log.Print(string(data))
-		}
+        stdout, err := cmd.StdoutPipe()
+        if err != nil {
+            log.Print(err)
+        }
 
-	case len(os.Args) > 2:
+        stderr, err := cmd.StderrPipe()
+        if err != nil {
+            log.Print(err)
+        }
 
-                sendCom(os.Args[1:], "/start")
-                go sendHeartbeat()
-		args := []string(os.Args[2:])
-		data, err := exec.Command(os.Args[1], args...).CombinedOutput()
-		if debug == true {
-                	log.Print(err)
-                	log.Print(string(data))
-		}
+        err = cmd.Start()
+        if err != nil {
+            log.Print(err)
+        }
 
-	}
+        go io.Copy(os.Stdout, stdout)
+        go io.Copy(os.Stderr, stderr)
+
+        cmd.Wait()
+
+
+    case len(os.Args) > 2:
+
+        sendCom(os.Args[1:], "/start")
+        go sendHeartbeat()
+        args := []string(os.Args[2:])
+        cmd := exec.Command(os.Args[1], args...)
+
+        stdout, err := cmd.StdoutPipe()
+        if err != nil {
+            log.Print(err)
+        }
+
+        stderr, err := cmd.StderrPipe()
+        if err != nil {
+            log.Print(err)
+        }
+
+        err = cmd.Start()
+        if err != nil {
+            log.Print(err)
+        }
+
+        go io.Copy(os.Stdout, stdout)
+        go io.Copy(os.Stderr, stderr)
+
+        cmd.Wait()
+
+    }
 
     sendCom(os.Args[1:], "/end")
 
@@ -225,7 +257,7 @@ func parseConfig() *Config {
 
 func postJSON(endpoint string, jsonBlob []byte) error {
 
-	url := "http://localhost:8080" + endpoint
+	url := "http://" + conf.Hostname + ":" + conf.Port + endpoint
 	req, _ := http.NewRequest("POST", url, bytes.NewBuffer(jsonBlob))
 
 	req.Header.Set("X-Custom-Header", "MyServer")
