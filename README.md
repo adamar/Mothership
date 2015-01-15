@@ -3,7 +3,7 @@ Mothership
 
 ## About
 
-Mothership is a process monitoring system.
+Mothership is a process / micro-service monitoring system. 
 
 
 ## Installation
@@ -20,7 +20,7 @@ Client:
 
 ## To do
 
- [ ] - Add config file and config parser
+ [x] - Add config file and config parser
  [x] - Gracefully handle failed connections
  [ ] - Add return codes and messages
  [ ] - Persist process state
