@@ -7,10 +7,11 @@ import (
 	"net/http"
 	"os"
 	"os/exec"
-        "net"
-        "strings"
-        "time"
-        "strconv"
+    "net"
+    "strings"
+    "time"
+    "strconv"
+    "io/ioutil"
 )
 
 
@@ -38,12 +39,21 @@ type ProcEnd struct {
 }
 
 
+type Config struct{
+    Hostname     string `json:"hostname"`
+    Port         string `json:"port"`
+}
+
+
+
 var UUID = genUuid()
 var debug = checkDebugStatus()
 
 
 
 func main() {
+
+    parseConfig()
 
 	switch {
 	case len(os.Args) == 1:
@@ -190,6 +200,27 @@ func sendHeartbeat() {
    }
 
 }
+
+
+
+func parseConfig() *Config {
+
+    content, err := ioutil.ReadFile("config.json")
+    if err!=nil{
+        log.Print(err)
+    }
+
+    var conf Config
+    err=json.Unmarshal(content, &conf)
+    if err!=nil{
+        log.Print(err)
+    }
+    return &conf
+
+}
+
+
+
 
 
 func postJSON(endpoint string, jsonBlob []byte) error {
