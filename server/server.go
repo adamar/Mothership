@@ -219,8 +219,9 @@ func unmarshalEnd(data []byte) (*ProcEnd, error) {
 
 func mainHandler(w http.ResponseWriter, req *http.Request) {
 
+    data := GetMany(procs)
     r := render.New(render.Options{})
-    r.HTML(w, http.StatusOK, "main", nil)
+    r.HTML(w, http.StatusOK, "main", data)
 
 }
 
@@ -228,7 +229,6 @@ func mainHandler(w http.ResponseWriter, req *http.Request) {
 func defunctHandler(w http.ResponseWriter, req *http.Request) {
 
     data := GetMany(defunctprocs)
-    log.Print(data)
     r := render.New(render.Options{})
     r.HTML(w, http.StatusOK, "defunct", data)
 

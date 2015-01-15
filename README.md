@@ -25,5 +25,5 @@ Client:
  [ ] - Add return codes and messages
  [ ] - Persist process state
  [ ] - Move processes to "finished"
-
+ [ ] - Add iterable times to each command for filtering
 
