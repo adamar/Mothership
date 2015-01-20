@@ -209,6 +209,23 @@ func sendHeartbeat() {
 }
 
 
+func sendEnd() {
+
+
+
+
+        endpoint := "/end"
+        jsonBlob, err := json.Marshal(blob)
+        if err != nil {
+            log.Print(err)
+        }
+
+        err = postJSON(endpoint, jsonBlob)
+        if err != nil {
+             log.Print("Failed to connect to MotherShip")
+        }
+
+}
 
 func parseConfig() *Config {
 
