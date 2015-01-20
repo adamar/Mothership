@@ -90,7 +90,7 @@ func main() {
 
     }
 
-    sendCom(os.Args[1:], "/end")
+    sendEnd()
 
 }
 
@@ -211,8 +211,11 @@ func sendHeartbeat() {
 
 func sendEnd() {
 
-
-
+        blob := ProcEnd{
+                UUID: UUID,
+                Error: true,
+                ExitMessage: "Fail",
+        }
 
         endpoint := "/end"
         jsonBlob, err := json.Marshal(blob)
