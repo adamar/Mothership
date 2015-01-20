@@ -12,7 +12,6 @@ import (
     "time"
     "strconv"
     "io/ioutil"
-    "io"
 )
 
 
@@ -65,23 +64,11 @@ func main() {
         go sendHeartbeat()
         cmd := exec.Command(os.Args[1])
 
-        stdout, err := cmd.StdoutPipe()
-        if err != nil {
-            log.Print(err)
-        }
+        cmd.Stdout = os.Stdout
+        cmd.Stderr = os.Stderr
+        cmd.Env = os.Environ()
 
-        stderr, err := cmd.StderrPipe()
-        if err != nil {
-            log.Print(err)
-        }
-
-        err = cmd.Start()
-        if err != nil {
-            log.Print(err)
-        }
-
-        go io.Copy(os.Stdout, stdout)
-        go io.Copy(os.Stderr, stderr)
+        cmd.Start()
 
         cmd.Wait()
 
@@ -93,23 +80,11 @@ func main() {
         args := []string(os.Args[2:])
         cmd := exec.Command(os.Args[1], args...)
 
-        stdout, err := cmd.StdoutPipe()
-        if err != nil {
-            log.Print(err)
-        }
+        cmd.Stdout = os.Stdout
+        cmd.Stderr = os.Stderr
+        cmd.Env = os.Environ()
 
-        stderr, err := cmd.StderrPipe()
-        if err != nil {
-            log.Print(err)
-        }
-
-        err = cmd.Start()
-        if err != nil {
-            log.Print(err)
-        }
-
-        go io.Copy(os.Stdout, stdout)
-        go io.Copy(os.Stderr, stderr)
+        cmd.Start()
 
         cmd.Wait()
 
