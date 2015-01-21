@@ -170,12 +170,9 @@ footer {
 
             var handleEnd = function(m) {
 
-                console.log(m);
+                $("#" + m.uuid).remove();
 
             }
-
-
-
 
 
             var source = new EventSource('/events/');
