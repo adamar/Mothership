@@ -329,6 +329,29 @@ func GetMany(bucket []byte) []ProcStart {
 
 
 
+func GetSince(bucket []byte) {
+
+    var data []ProcStart
+    var p ProcStart
+
+    procDB.View(func(tx *bolt.Tx) error {
+        b := tx.Bucket(bucket)
+        c := b.Cursor()
+
+        for k, v := c.First(); k != nil; k, v = c.Next() {
+            fmt.Printf("key=%s, value=%s\n", k, v)
+            json.Unmarshal(v, &p)
+            data = append(data, p)
+        }
+
+        return nil
+    })
+
+    return data
+
+}
+
+
 
 func setupDB() *bolt.DB {
 
