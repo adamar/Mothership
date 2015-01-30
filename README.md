@@ -28,5 +28,6 @@ Client:
  [ ] - Add iterable times to each command for filtering
  [ ] - Catch crtl-c in client
  [ ] - Remove processes after a variable amount of time
+ [ ] - Move all messages to standard fields
 
 
