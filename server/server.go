@@ -329,7 +329,7 @@ func GetMany(bucket []byte) []ProcStart {
 
 
 
-func GetSince(bucket []byte) {
+func GetSince(bucket []byte, t1 time.Time) {
 
     var data []ProcStart
     var p ProcStart
@@ -339,9 +339,12 @@ func GetSince(bucket []byte) {
         c := b.Cursor()
 
         for k, v := c.First(); k != nil; k, v = c.Next() {
-            fmt.Printf("key=%s, value=%s\n", k, v)
             json.Unmarshal(v, &p)
             data = append(data, p)
+
+            t0, _ := time.Parse(time.RFC3339, data.curTime)
+
+            var duration time.Duration = t1.Sub(t0)
         }
 
         return nil
