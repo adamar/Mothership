@@ -61,6 +61,7 @@ func main() {
 
     case len(os.Args) == 2:
 
+        sendCom(os.Args[1], "/start")
         go sendHeartbeat()
         cmd := exec.Command(os.Args[1])
 
