@@ -15,7 +15,7 @@ import (
 )
 
 
-type ProcStart struct {
+type procstart struct {
     UUID         string `json:"uuid"`
     LocalTime    string `json:"localtime"`
     Command      string `json:"command"`
@@ -25,28 +25,28 @@ type ProcStart struct {
 }
 
 
-type Heartbeat struct {
+type heartbeat struct {
     UUID         string `json:"uuid"`
     Ping         string `json:"Ping"`
     RunningTime  string `json:"runningtime"`
 }
 
 
-type ProcEnd struct {
+type procend struct {
     UUID         string `json:"uuid"`
     Error        bool   `json:"error"`
     ExitMessage  string `json:"exitmessage"`
 }
 
 
-type Config struct{
+type config struct{
     Hostname     string `json:"hostname"`
     Port         string `json:"port"`
 }
 
 
 
-var UUID = genUuid()
+var uuid = genUuid()
 var debug = checkDebugStatus()
 var conf = parseConfig()
 
@@ -61,7 +61,7 @@ func main() {
 
     case len(os.Args) == 2:
 
-        sendCom(os.Args[1], "/start")
+        sendCom(os.Args[1:], "/start")
         go sendHeartbeat()
         cmd := exec.Command(os.Args[1])
 
@@ -153,8 +153,8 @@ func sendCom(cmd []string, endpoint string) error {
         // Get Hostname
         hostname, _ := os.Hostname()
 
-        blob := ProcStart{
-                UUID: UUID,
+        blob := procstart{
+                UUID: uuid,
                 LocalTime: curTime,
                 Command: cmdstring,
                 Hostname: hostname,
@@ -187,9 +187,9 @@ func sendHeartbeat() {
 
         runningTime := runningTime(startingTime, endingTime)
 
-        blob := Heartbeat{
+        blob := heartbeat{
                 Ping: string(time.Now().Format(time.RFC3339)),
-                UUID: UUID,
+                UUID: uuid,
                 RunningTime: runningTime,
         }
 
@@ -212,8 +212,8 @@ func sendHeartbeat() {
 
 func sendEnd() {
 
-        blob := ProcEnd{
-                UUID: UUID,
+        blob := procend{
+                UUID: uuid,
                 Error: true,
                 ExitMessage: "Fail",
         }
@@ -231,14 +231,14 @@ func sendEnd() {
 
 }
 
-func parseConfig() *Config {
+func parseConfig() *config {
 
     content, err := ioutil.ReadFile("config.json")
     if err!=nil{
         log.Print(err)
     }
 
-    var conf Config
+    var conf config
     err=json.Unmarshal(content, &conf)
     if err!=nil{
         log.Print(err)
