@@ -3,109 +3,99 @@ package main
 import (
 	"bytes"
 	"encoding/json"
+	"io/ioutil"
 	"log"
+	"net"
 	"net/http"
 	"os"
 	"os/exec"
-    "net"
-    "strings"
-    "time"
-    "strconv"
-    "io/ioutil"
+	"strconv"
+	"strings"
+	"time"
 )
 
-
 type procstart struct {
-    UUID         string `json:"uuid"`
-    LocalTime    string `json:"localtime"`
-    Command      string `json:"command"`
-    Hostname     string `json:"hostname"`
-    IPaddress    string `json:"ipaddress"`
-    Hash         string `json:"hash"`
+	UUID      string `json:"uuid"`
+	LocalTime string `json:"localtime"`
+	Command   string `json:"command"`
+	Hostname  string `json:"hostname"`
+	IPaddress string `json:"ipaddress"`
+	Hash      string `json:"hash"`
 }
-
 
 type heartbeat struct {
-    UUID         string `json:"uuid"`
-    Ping         string `json:"Ping"`
-    RunningTime  string `json:"runningtime"`
+	UUID        string `json:"uuid"`
+	Ping        string `json:"Ping"`
+	RunningTime string `json:"runningtime"`
 }
-
 
 type procend struct {
-    UUID         string `json:"uuid"`
-    Error        bool   `json:"error"`
-    ExitMessage  string `json:"exitmessage"`
+	UUID        string `json:"uuid"`
+	Error       bool   `json:"error"`
+	ExitMessage string `json:"exitmessage"`
 }
 
-
-type config struct{
-    Hostname     string `json:"hostname"`
-    Port         string `json:"port"`
+type config struct {
+	Hostname string `json:"hostname"`
+	Port     string `json:"port"`
 }
-
-
 
 var uuid = genUuid()
 var debug = checkDebugStatus()
 var conf = parseConfig()
 
-
 func main() {
 
-    switch {
-    case len(os.Args) == 1:
-        if debug == true {
-            log.Print("nothing to run")
-        }
+	switch {
+	case len(os.Args) == 1:
+		if debug == true {
+			log.Print("nothing to run")
+		}
 
-    case len(os.Args) == 2:
+	case len(os.Args) == 2:
 
-        sendCom(os.Args[1:], "/start")
-        go sendHeartbeat()
-        cmd := exec.Command(os.Args[1])
+		sendCom(os.Args[1:], "/start")
+		go sendHeartbeat()
+		cmd := exec.Command(os.Args[1])
 
-        cmd.Stdout = os.Stdout
-        cmd.Stderr = os.Stderr
-        cmd.Env = os.Environ()
+		cmd.Stdout = os.Stdout
+		cmd.Stderr = os.Stderr
+		cmd.Env = os.Environ()
 
-        cmd.Start()
+		cmd.Start()
 
-        cmd.Wait()
+		cmd.Wait()
 
+	case len(os.Args) > 2:
 
-    case len(os.Args) > 2:
+		sendCom(os.Args[1:], "/start")
+		go sendHeartbeat()
+		args := []string(os.Args[2:])
+		cmd := exec.Command(os.Args[1], args...)
 
-        sendCom(os.Args[1:], "/start")
-        go sendHeartbeat()
-        args := []string(os.Args[2:])
-        cmd := exec.Command(os.Args[1], args...)
+		cmd.Stdout = os.Stdout
+		cmd.Stderr = os.Stderr
+		cmd.Env = os.Environ()
 
-        cmd.Stdout = os.Stdout
-        cmd.Stderr = os.Stderr
-        cmd.Env = os.Environ()
+		cmd.Start()
 
-        cmd.Start()
+		cmd.Wait()
 
-        cmd.Wait()
+	}
 
-    }
-
-    sendEnd()
+	sendEnd()
 
 }
-
 
 func checkDebugStatus() bool {
 
-    if os.Getenv("DEBUG") == "TRUE" {
-        return true
-    }
+	if os.Getenv("DEBUG") == "TRUE" {
+		return true
+	}
 
-    return false
+	return false
 
 }
-
 
 func genUuid() string {
 	out, err := exec.Command("uuidgen").Output()
@@ -113,143 +103,132 @@ func genUuid() string {
 		return ""
 	}
 
-        var fixed string
-        fixed = strings.Replace(string(out), "\n","", -1)
+	var fixed string
+	fixed = strings.Replace(string(out), "\n", "", -1)
 
-        return fixed
+	return fixed
 }
-
-
 
 func runningTime(startingTime time.Time, endingTime time.Time) string {
 
-        var duration time.Duration = endingTime.Sub(startingTime) 
+	var duration time.Duration = endingTime.Sub(startingTime)
 
-        durationMs := int64(duration / 1000000)
-        durationMin := durationMs / 1000 / 60 % 60
-        durationHr := durationMs / 1000 / 60 / 60 % 24
+	durationMs := int64(duration / 1000000)
+	durationMin := durationMs / 1000 / 60 % 60
+	durationHr := durationMs / 1000 / 60 / 60 % 24
 
-        if durationMin > 60 {
-            return strconv.FormatInt(durationHr, 10) + " hr"
-        }
+	if durationMin > 60 {
+		return strconv.FormatInt(durationHr, 10) + " hr"
+	}
 
-        return strconv.FormatInt(durationMin, 10) + " min"
+	return strconv.FormatInt(durationMin, 10) + " min"
 
 }
-
-
 
 func sendCom(cmd []string, endpoint string) error {
 
-        // Get IP
-        ip, _ := getIP()
+	// Get IP
+	ip, _ := getIP()
 
-        // Get Command and Args
-        cmdstring := strings.Join(cmd, " ")
+	// Get Command and Args
+	cmdstring := strings.Join(cmd, " ")
 
-        // Get Current Time
-        curTime := string(time.Now().Format(time.RFC3339))
+	// Get Current Time
+	curTime := string(time.Now().Format(time.RFC3339))
 
-        // Get Hostname
-        hostname, _ := os.Hostname()
+	// Get Hostname
+	hostname, _ := os.Hostname()
 
-        blob := procstart{
-                UUID: uuid,
-                LocalTime: curTime,
-                Command: cmdstring,
-                Hostname: hostname,
-                IPaddress: ip,
-                Hash: "A736BC202EC3C",
-        }
+	blob := procstart{
+		UUID:      uuid,
+		LocalTime: curTime,
+		Command:   cmdstring,
+		Hostname:  hostname,
+		IPaddress: ip,
+		Hash:      "A736BC202EC3C",
+	}
 
-        jsonBlob, err := json.Marshal(blob)
-        if err != nil {
-            return err
-        }
+	jsonBlob, err := json.Marshal(blob)
+	if err != nil {
+		return err
+	}
 
-        err = postJSON(endpoint, jsonBlob)
-        if err != nil {
-             log.Print("Failed to connect to MotherShip")
-        }
+	err = postJSON(endpoint, jsonBlob)
+	if err != nil {
+		log.Print("Failed to connect to MotherShip")
+	}
 
-        return nil
+	return nil
 }
-
 
 func sendHeartbeat() {
 
-    startingTime := time.Now().UTC()
+	startingTime := time.Now().UTC()
 
-    c := time.Tick(60 * time.Second)
-    for _ = range c {
+	c := time.Tick(60 * time.Second)
+	for _ = range c {
 
-        endingTime := time.Now().UTC()
+		endingTime := time.Now().UTC()
 
-        runningTime := runningTime(startingTime, endingTime)
+		runningTime := runningTime(startingTime, endingTime)
 
-        blob := heartbeat{
-                Ping: string(time.Now().Format(time.RFC3339)),
-                UUID: uuid,
-                RunningTime: runningTime,
-        }
+		blob := heartbeat{
+			Ping:        string(time.Now().Format(time.RFC3339)),
+			UUID:        uuid,
+			RunningTime: runningTime,
+		}
 
-        endpoint := "/heartbeat"
-        jsonBlob, err := json.Marshal(blob)
-        if err != nil {
-            log.Print(err)
-        }
+		endpoint := "/heartbeat"
+		jsonBlob, err := json.Marshal(blob)
+		if err != nil {
+			log.Print(err)
+		}
 
-        err = postJSON(endpoint, jsonBlob)
-        if err != nil {
-             log.Print("Failed to connect to MotherShip")
-        }
+		err = postJSON(endpoint, jsonBlob)
+		if err != nil {
+			log.Print("Failed to connect to MotherShip")
+		}
 
-
-   }
+	}
 
 }
 
-
 func sendEnd() {
 
-        blob := procend{
-                UUID: uuid,
-                Error: true,
-                ExitMessage: "Fail",
-        }
+	blob := procend{
+		UUID:        uuid,
+		Error:       true,
+		ExitMessage: "Fail",
+	}
 
-        endpoint := "/end"
-        jsonBlob, err := json.Marshal(blob)
-        if err != nil {
-            log.Print(err)
-        }
+	endpoint := "/end"
+	jsonBlob, err := json.Marshal(blob)
+	if err != nil {
+		log.Print(err)
+	}
 
-        err = postJSON(endpoint, jsonBlob)
-        if err != nil {
-             log.Print("Failed to connect to MotherShip")
-        }
+	err = postJSON(endpoint, jsonBlob)
+	if err != nil {
+		log.Print("Failed to connect to MotherShip")
+	}
 
 }
 
 func parseConfig() *config {
 
-    content, err := ioutil.ReadFile("config.json")
-    if err!=nil{
-        log.Print(err)
-    }
+	content, err := ioutil.ReadFile("config.json")
+	if err != nil {
+		log.Print(err)
+	}
 
-    var conf config
-    err=json.Unmarshal(content, &conf)
-    if err!=nil{
-        log.Print(err)
-    }
-    return &conf
+	var conf config
+	err = json.Unmarshal(content, &conf)
+	if err != nil {
+		log.Print(err)
+	}
+	return &conf
 
 }
-
-
-
-
 
 func postJSON(endpoint string, jsonBlob []byte) error {
 
@@ -261,34 +240,39 @@ func postJSON(endpoint string, jsonBlob []byte) error {
 
 	client := &http.Client{}
 	resp, err := client.Do(req)
-        if err != nil {
-            return err
-        }
+	if err != nil {
+		return err
+	}
 
 	defer resp.Body.Close()
-        return nil
+	return nil
 
 }
 
-
 func getIP() (string, error) {
 
-    addrs, err := net.InterfaceAddrs()
-    if err != nil {
-        return "", nil
-    }
+	addrs, err := net.InterfaceAddrs()
+	if err != nil {
+		return "", nil
+	}
 
-    var IP string
+	var IP string
 
-    for _, add := range addrs {
-        if ipadd, ok := add.(*net.IPNet); ok && !ipadd.IP.IsLoopback() {
-            // Add get ipv6 and drop through to ipv4 if poss
-            if ipadd.IP.To4() != nil {
-               IP = ipadd.IP.String()
-            }
-        }
-    }
+	for _, add := range addrs {
+		if ipadd, ok := add.(*net.IPNet); ok && !ipadd.IP.IsLoopback() {
+			// Add get ipv6 and drop through to ipv4 if poss
+			if ipadd.IP.To4() != nil {
+				IP = ipadd.IP.String()
+			}
+		}
+	}
 
-    return IP, nil
+	return IP, nil
 
+}
+
+func md5String(input string) string {
+	hash := md5.New()
+	io.WriteString(hash, input)
+	return hex.EncodeToString((hash.Sum(nil)))
 }
