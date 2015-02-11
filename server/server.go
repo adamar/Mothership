@@ -9,6 +9,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"time"
 )
 
 type Broker struct {
@@ -298,7 +299,7 @@ func GetMany(bucket []byte) []ProcStart {
 
 }
 
-func GetSince(bucket []byte, t1 time.Time) {
+func GetSince(bucket []byte, t1 time.Time) []ProcStart {
 
 	var data []ProcStart
 	var p ProcStart
@@ -309,11 +310,11 @@ func GetSince(bucket []byte, t1 time.Time) {
 
 		for k, v := c.First(); k != nil; k, v = c.Next() {
 			json.Unmarshal(v, &p)
-			data = append(data, p)
+			//data = append(data, p)
 
-			t0, _ := time.Parse(time.RFC3339, data.curTime)
+			//t0, _ := time.Parse(time.RFC3339, v.curTime)
 
-			var duration time.Duration = t1.Sub(t0)
+			//var duration time.Duration = t1.Sub(t0)
 		}
 
 		return nil
