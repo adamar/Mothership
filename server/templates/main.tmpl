@@ -122,6 +122,7 @@ footer {
             <table class="table table-striped" id="procs">
               <thead>
                 <tr>
+                  <th>ID</th>
                   <th>UUID</th>
                   <th>Command</th>
                   <th>Running time</th>
@@ -132,7 +133,7 @@ footer {
               <tbody>
               {{ range . }}
 
-                <tr id="asxasx"><td>{{ .UUID }}</td><td>{{ .Command }}</td><td id="time"> - </td><td>{{ .IPaddress }}</td><td>{{ .Hostname }}</td></tr>
+                <tr id="asxasx"><td> - </td><td>{{ .UUID }}</td><td>{{ .Command }}</td><td id="time"> - </td><td>{{ .IPaddress }}</td><td>{{ .Hostname }}</td></tr>
 
               {{ end }}
               </tbody>
@@ -153,9 +154,17 @@ footer {
         <script type="text/javascript">
 
 
+            function trim(input, maxLength) {
+                 if (input.length > maxLength) {
+                     console.log
+                     return input.substring(maxLength,0) + '...';
+                 }
+                 return input
+            }
+
 
             var handleStart = function(m) {
-                $("#procs tbody").append('<tr id="' + m.uuid  + '"><td>' + m.uuid + '</td><td>' + m.command + 
+                $("#procs tbody").append('<tr id="' + m.uuid + '"><td><a href="#">' + trim(m.hash, 12) + '<a/></td><td>' + trim(m.uuid, 12) + '</td><td>' + m.command + 
                                          '</td><td id="time"> - </td><td>' + m.ipaddress 
                                          + '</td><td>' + m.hostname + '</td></tr>');
 
