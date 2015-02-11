@@ -2,7 +2,10 @@ package main
 
 import (
 	"bytes"
+	"crypto/md5"
+	"encoding/hex"
 	"encoding/json"
+	"io"
 	"io/ioutil"
 	"log"
 	"net"
@@ -139,13 +142,16 @@ func sendCom(cmd []string, endpoint string) error {
 	// Get Hostname
 	hostname, _ := os.Hostname()
 
+	// Create a hash of the command, ip and hostname strings
+	hashOfInfo := md5String(cmdstring + ip + hostname)
+
 	blob := procstart{
 		UUID:      uuid,
 		LocalTime: curTime,
 		Command:   cmdstring,
 		Hostname:  hostname,
 		IPaddress: ip,
-		Hash:      "A736BC202EC3C",
+		Hash:      hashOfInfo,
 	}
 
 	jsonBlob, err := json.Marshal(blob)
