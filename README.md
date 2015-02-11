@@ -23,11 +23,14 @@ Client:
  [x] - Add config file and config parser
  [x] - Gracefully handle failed connections
  [ ] - Add return codes and messages
- [ ] - Persist process state
- [ ] - Move processes to "finished"
+ [x] - Persist process state
+ [x] - Move processes to "finished"
  [ ] - Add iterable times to each command for filtering
  [ ] - Catch crtl-c in client
  [ ] - Remove processes after a variable amount of time
  [ ] - Move all messages to standard fields
+ [ ] - Order events by date started
+ [ ] - Add hash to process list
+ [ ] - Truncate UUID on page
 
 
