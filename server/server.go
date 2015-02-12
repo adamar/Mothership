@@ -129,7 +129,6 @@ func handleStart(w http.ResponseWriter, req *http.Request) {
 		Put(procs, []byte(out.UUID), body)
 
 		data := `{"type":"start","body":` + string(body) + `}`
-		log.Print(data)
 		broker.messages <- data
 		w.Write([]byte("status"))
 	} else {
@@ -203,16 +202,15 @@ func unmarshalEnd(data []byte) (*ProcEnd, error) {
 
 func mainHandler(w http.ResponseWriter, req *http.Request) {
 
-	//allProcs := GetMany(procs)
 	r := render.New(render.Options{})
 	r.HTML(w, http.StatusOK, "main", nil)
 
 	go func() {
 
-		allProcs := GetMany(procs)
+		allProcs := GetManyAsJson(procs)
 
 		for _, vals := range allProcs {
-			//log.Print(vals)
+			data := `{"type":"start","body":` + vals + `}`
 			broker.messages <- data
 		}
 	}()
@@ -301,6 +299,25 @@ func GetMany(bucket []byte) []ProcStart {
 		for k, v := c.First(); k != nil; k, v = c.Next() {
 			json.Unmarshal(v, &p)
 			data = append(data, p)
+		}
+
+		return nil
+	})
+
+	return data
+
+}
+
+func GetManyAsJson(bucket []byte) []string {
+
+	var data []string
+
+	procDB.View(func(tx *bolt.Tx) error {
+		b := tx.Bucket(bucket)
+		c := b.Cursor()
+
+		for k, v := c.First(); k != nil; k, v = c.Next() {
+			data = append(data, string(v))
 		}
 
 		return nil
