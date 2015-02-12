@@ -28,9 +28,9 @@ Client:
  [ ] - Add iterable times to each command for filtering
  [ ] - Catch crtl-c in client
  [ ] - Remove processes after a variable amount of time
- [ ] - Move all messages to standard fields
+ [ ] - Move all messages to standard fields (ie. create a single struct for all client data)
  [ ] - Order events by date started
- [ ] - Add hash to process list
- [ ] - Truncate UUID on page
+ [x] - Add hash to process list
+ [x] - Truncate UUID on page
 
 
