@@ -129,6 +129,7 @@ func handleStart(w http.ResponseWriter, req *http.Request) {
 		Put(procs, []byte(out.UUID), body)
 
 		data := `{"type":"start","body":` + string(body) + `}`
+		log.Print(data)
 		broker.messages <- data
 		w.Write([]byte("status"))
 	} else {
@@ -202,9 +203,19 @@ func unmarshalEnd(data []byte) (*ProcEnd, error) {
 
 func mainHandler(w http.ResponseWriter, req *http.Request) {
 
-	data := GetMany(procs)
+	//allProcs := GetMany(procs)
 	r := render.New(render.Options{})
-	r.HTML(w, http.StatusOK, "main", data)
+	r.HTML(w, http.StatusOK, "main", nil)
+
+	go func() {
+
+		allProcs := GetMany(procs)
+
+		for _, vals := range allProcs {
+			//log.Print(vals)
+			broker.messages <- data
+		}
+	}()
 
 }
 
