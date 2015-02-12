@@ -228,9 +228,18 @@ func mainHandler(w http.ResponseWriter, req *http.Request) {
 
 func defunctHandler(w http.ResponseWriter, req *http.Request) {
 
-	data := GetMany(defunctprocs)
 	r := render.New(render.Options{})
-	r.HTML(w, http.StatusOK, "defunct", data)
+	r.HTML(w, http.StatusOK, "defunct", nil)
+
+	go func() {
+
+		allProcs := GetManyAsJson(defunctprocs)
+
+		for _, vals := range allProcs {
+			data := buildMessageBody("start", vals)
+			broker.messages <- data
+		}
+	}()
 
 }
 
