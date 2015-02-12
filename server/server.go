@@ -128,7 +128,8 @@ func handleStart(w http.ResponseWriter, req *http.Request) {
 
 		Put(procs, []byte(out.UUID), body)
 
-		data := `{"type":"start","body":` + string(body) + `}`
+		data := buildMessageBody("start", string(body))
+
 		broker.messages <- data
 		w.Write([]byte("status"))
 	} else {
@@ -146,7 +147,8 @@ func handleHeartbeat(w http.ResponseWriter, req *http.Request) {
 			log.Print(string(body))
 		}
 
-		data := `{"type":"heartbeat","body":` + string(body) + `}`
+		data := buildMessageBody("heartbeat", string(body))
+
 		broker.messages <- data
 		w.Write([]byte("status"))
 	} else {
@@ -169,12 +171,19 @@ func handleEnd(w http.ResponseWriter, req *http.Request) {
 		Delete(procs, []byte(out.UUID))
 		Put(defunctprocs, []byte(out.UUID), body)
 
-		data := `{"type":"end","body":` + string(body) + `}`
+		data := buildMessageBody("end", string(body))
+
 		broker.messages <- data
 		w.Write([]byte("status"))
 	} else {
 		w.Write([]byte("error, do post"))
 	}
+
+}
+
+func buildMessageBody(msgtype string, msgbody string) string {
+
+	return `{"type":"` + msgtype + `","body":` + msgbody + `}`
 
 }
 
@@ -210,7 +219,7 @@ func mainHandler(w http.ResponseWriter, req *http.Request) {
 		allProcs := GetManyAsJson(procs)
 
 		for _, vals := range allProcs {
-			data := `{"type":"start","body":` + vals + `}`
+			data := buildMessageBody("start", vals)
 			broker.messages <- data
 		}
 	}()
