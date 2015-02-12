@@ -159,9 +159,21 @@ footer {
 
 
             var handleStart = function(m) {
-                $("#procs tbody").append('<tr id="' + m.uuid + '"><td><a href="#">' + trim(m.hash, 12) + '<a/></td><td>' + trim(m.uuid, 12) + '</td><td>' + m.command + 
-                                         '</td><td id="time"> - </td><td>' + m.ipaddress 
-                                         + '</td><td>' + m.hostname + '</td></tr>');
+
+
+                if ($('#' + m.uuid).length > 0) {
+                    console.log(m);
+                    console.log("element exists");
+                }
+
+                $("#procs tbody").append('<tr id="' + m.uuid + '">' + 
+                                            '<td><a href="#">' + trim(m.hash, 12) + '<a/></td>' + 
+                                            '<td>' + trim(m.uuid, 12) + '</td>' + 
+                                            '<td>' + m.command + '</td>' + 
+                                            '<td id="time"> - </td>' + 
+                                            '<td>' + m.ipaddress + '</td>' + 
+                                            '<td>' + m.hostname + '</td>' + 
+                                         '</tr>');
 
             }
 
