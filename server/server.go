@@ -12,7 +12,7 @@ import (
 	"time"
 )
 
-type Broker struct {
+type broke struct {
 	clients        map[chan string]bool
 	newClients     chan chan string
 	defunctClients chan chan string
@@ -46,7 +46,7 @@ var procDB = setupDB()
 var procs = []byte("processes")
 var defunctprocs = []byte("defunctprocesses")
 
-func (b *Broker) start() {
+func (b *broke) start() {
 	go func() {
 		for {
 			select {
@@ -85,7 +85,7 @@ func checkDebugStatus() bool {
 
 }
 
-func (b *Broker) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+func (b *broke) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	f, ok := w.(http.Flusher)
 	if !ok {
@@ -243,9 +243,9 @@ func defunctHandler(w http.ResponseWriter, req *http.Request) {
 
 }
 
-func newBroker() *Broker {
+func newBroker() *broke {
 
-	broker := &Broker{
+	broker := &broke{
 		make(map[chan string]bool),
 		make(chan (chan string)),
 		make(chan (chan string)),
