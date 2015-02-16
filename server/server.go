@@ -40,13 +40,13 @@ type procEnd struct {
 	ExitMessage string `json:"exitmessage"`
 }
 
-var broker = NewBroker()
+var broker = newBroker()
 var debug = checkDebugStatus()
 var procDB = setupDB()
 var procs = []byte("processes")
 var defunctprocs = []byte("defunctprocesses")
 
-func (b *Broker) Start() {
+func (b *Broker) start() {
 	go func() {
 		for {
 			select {
@@ -126,7 +126,7 @@ func handleStart(w http.ResponseWriter, req *http.Request) {
 			log.Print(err)
 		}
 
-		Put(procs, []byte(out.UUID), body)
+		put(procs, []byte(out.UUID), body)
 
 		data := buildMessageBody("start", string(body))
 
@@ -168,8 +168,8 @@ func handleEnd(w http.ResponseWriter, req *http.Request) {
 			log.Print(err)
 		}
 
-		Delete(procs, []byte(out.UUID))
-		Put(defunctprocs, []byte(out.UUID), body)
+		del(procs, []byte(out.UUID))
+		put(defunctprocs, []byte(out.UUID), body)
 
 		data := buildMessageBody("end", string(body))
 
@@ -216,7 +216,7 @@ func mainHandler(w http.ResponseWriter, req *http.Request) {
 
 	go func() {
 
-		allProcs := GetManyAsJson(procs)
+		allProcs := getManyAsJSON(procs)
 
 		for _, vals := range allProcs {
 			data := buildMessageBody("start", vals)
@@ -233,7 +233,7 @@ func defunctHandler(w http.ResponseWriter, req *http.Request) {
 
 	go func() {
 
-		allProcs := GetManyAsJson(defunctprocs)
+		allProcs := getManyAsJSON(defunctprocs)
 
 		for _, vals := range allProcs {
 			data := buildMessageBody("start", vals)
@@ -243,7 +243,7 @@ func defunctHandler(w http.ResponseWriter, req *http.Request) {
 
 }
 
-func NewBroker() *Broker {
+func newBroker() *Broker {
 
 	broker := &Broker{
 		make(map[chan string]bool),
@@ -256,7 +256,7 @@ func NewBroker() *Broker {
 
 }
 
-func Put(bucket []byte, key []byte, value []byte) error {
+func put(bucket []byte, key []byte, value []byte) error {
 
 	err := procDB.Update(func(tx *bolt.Tx) error {
 		b := tx.Bucket(bucket)
@@ -272,7 +272,7 @@ func Put(bucket []byte, key []byte, value []byte) error {
 
 }
 
-func Get(bucket []byte, key []byte) []byte {
+func get(bucket []byte, key []byte) []byte {
 
 	var val []byte
 
@@ -286,7 +286,7 @@ func Get(bucket []byte, key []byte) []byte {
 
 }
 
-func Delete(bucket []byte, key []byte) error {
+func del(bucket []byte, key []byte) error {
 
 	err := procDB.View(func(tx *bolt.Tx) error {
 		b := tx.Bucket(bucket)
@@ -305,7 +305,7 @@ func Delete(bucket []byte, key []byte) error {
 
 }
 
-func GetMany(bucket []byte) []procStart {
+func getMany(bucket []byte) []procStart {
 
 	var data []procStart
 	var p procStart
@@ -326,7 +326,7 @@ func GetMany(bucket []byte) []procStart {
 
 }
 
-func GetManyAsJson(bucket []byte) []string {
+func getManyAsJSON(bucket []byte) []string {
 
 	var data []string
 
@@ -345,7 +345,7 @@ func GetManyAsJson(bucket []byte) []string {
 
 }
 
-func GetSince(bucket []byte, t1 time.Time) []procStart {
+func getSince(bucket []byte, t1 time.Time) []procStart {
 
 	var data []procStart
 	var p procStart
@@ -399,7 +399,7 @@ func setupDB() *bolt.DB {
 
 func main() {
 
-	broker.Start()
+	broker.start()
 
 	http.Handle("/events/", broker)
 	http.HandleFunc("/start", handleStart)
