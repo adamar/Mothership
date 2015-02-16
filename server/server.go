@@ -19,7 +19,7 @@ type Broker struct {
 	messages       chan string
 }
 
-type ProcStart struct {
+type procStart struct {
 	UUID      string `json:"uuid"`
 	LocalTime string `json:"localtime"`
 	Command   string `json:"command"`
@@ -28,19 +28,19 @@ type ProcStart struct {
 	Hash      string `json:"hash"`
 }
 
-type Heartbeat struct {
+type heartbeat struct {
 	UUID        string `json:"uuid"`
 	Ping        string `json:"Ping"`
 	RunningTime string `json:"runningtime"`
 }
 
-type ProcEnd struct {
+type procEnd struct {
 	UUID        string `json:"uuid"`
 	Error       bool   `json:"error"`
 	ExitMessage string `json:"exitmessage"`
 }
 
-var broker *Broker = NewBroker()
+var broker = NewBroker()
 var debug = checkDebugStatus()
 var procDB = setupDB()
 var procs = []byte("processes")
@@ -63,7 +63,7 @@ func (b *Broker) Start() {
 				}
 
 			case msg := <-b.messages:
-				for s, _ := range b.clients {
+				for s := range b.clients {
 					s <- msg
 				}
 				if debug == true {
@@ -187,9 +187,9 @@ func buildMessageBody(msgtype string, msgbody string) string {
 
 }
 
-func unmarshalStart(data []byte) (*ProcStart, error) {
+func unmarshalStart(data []byte) (*procStart, error) {
 
-	start := &ProcStart{}
+	start := &procStart{}
 
 	if err := json.Unmarshal(data, &start); err != nil {
 		return nil, err
@@ -198,9 +198,9 @@ func unmarshalStart(data []byte) (*ProcStart, error) {
 
 }
 
-func unmarshalEnd(data []byte) (*ProcEnd, error) {
+func unmarshalEnd(data []byte) (*procEnd, error) {
 
-	end := &ProcEnd{}
+	end := &procEnd{}
 
 	if err := json.Unmarshal(data, &end); err != nil {
 		return nil, err
@@ -305,10 +305,10 @@ func Delete(bucket []byte, key []byte) error {
 
 }
 
-func GetMany(bucket []byte) []ProcStart {
+func GetMany(bucket []byte) []procStart {
 
-	var data []ProcStart
-	var p ProcStart
+	var data []procStart
+	var p procStart
 
 	procDB.View(func(tx *bolt.Tx) error {
 		b := tx.Bucket(bucket)
@@ -345,10 +345,10 @@ func GetManyAsJson(bucket []byte) []string {
 
 }
 
-func GetSince(bucket []byte, t1 time.Time) []ProcStart {
+func GetSince(bucket []byte, t1 time.Time) []procStart {
 
-	var data []ProcStart
-	var p ProcStart
+	var data []procStart
+	var p procStart
 
 	procDB.View(func(tx *bolt.Tx) error {
 		b := tx.Bucket(bucket)
