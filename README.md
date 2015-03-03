@@ -9,27 +9,28 @@ Mothership is a process / micro-service monitoring system. The client wraps a pr
 ## Installation
 
 #### Server: 
+
+Run the Server
 ```sh
 go run server.go
 ```   
 
 #### Client:
 
-
+Build the client binary
 ```sh
 go build client.go 
 ```
-Build Client
 
+Copy to the client server
 ```sh
 scp client server:/usr/local/bin
 ```
-Copy client to
 
+Run the Client
 ```sh
 client {command} {args}
 ```
-Run client 
 
 
 ## To do
