@@ -12,8 +12,10 @@ import (
 	"net/http"
 	"os"
 	"os/exec"
+	"os/signal"
 	"strconv"
 	"strings"
+	"syscall"
 	"time"
 )
 
@@ -54,20 +56,61 @@ func main() {
 		os.Exit(1)
 	}
 
+	sigChan := make(chan os.Signal)
+	cmdChan := make(chan error, 1)
+
+	signal.Notify(sigChan, os.Interrupt)
+	go catchEnd(sigChan)
+
 	sendCom(os.Args[1:], "/start")
-	go sendHeartbeat()
+
 	args := []string(os.Args[2:])
 	cmd := exec.Command(os.Args[1], args...)
 
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
+	cmd.Stdin = os.Stdin
+	cmd.Env = os.Environ()
+
+	cmd.Start()
+
+	go func() {
+		cmdChan <- cmd.Wait()
+	}()
+
+	go sendHeartbeat()
+	//args := []string(os.Args[2:])
+
+	for {
+		select {
+		case cmdErr := <-cmdChan:
+			if cmdErr != nil {
+				log.Print(cmdErr)
+			}
+			log.Print("cmdChan")
+			exitStatus := cmd.ProcessState.Sys().(syscall.WaitStatus).ExitStatus()
+			log.Print(exitStatus)
+			os.Exit(0)
+		}
+	}
+
+	sendEnd()
+
+}
+
+func runCommand(bin []string) {
+
+	args := []string(bin[2:])
+	cmd := exec.Command(bin[1], args...)
+
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+	cmd.Stdin = os.Stdin
 	cmd.Env = os.Environ()
 
 	cmd.Start()
 
 	cmd.Wait()
-
-	sendEnd()
 
 }
 
@@ -183,7 +226,8 @@ func sendHeartbeat() {
 func catchEnd(c <-chan os.Signal) {
 
 	for sig := range c {
-		log.Print("Got Ctrl+c")
+		log.Print(sig)
+		sendEnd()
 		os.Exit(1)
 	}
 
