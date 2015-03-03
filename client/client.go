@@ -49,28 +49,23 @@ var conf = parseConfig()
 
 func main() {
 
-	switch {
-	case len(os.Args) == 1:
-		if debug == true {
-			log.Print("nothing to run")
-		}
-
-	case len(os.Args) > 1:
-
-		sendCom(os.Args[1:], "/start")
-		go sendHeartbeat()
-		args := []string(os.Args[2:])
-		cmd := exec.Command(os.Args[1], args...)
-
-		cmd.Stdout = os.Stdout
-		cmd.Stderr = os.Stderr
-		cmd.Env = os.Environ()
-
-		cmd.Start()
-
-		cmd.Wait()
-
+	if len(os.Args) == 1 {
+		log.Print("nothing to run")
+		os.Exit(1)
 	}
+
+	sendCom(os.Args[1:], "/start")
+	go sendHeartbeat()
+	args := []string(os.Args[2:])
+	cmd := exec.Command(os.Args[1], args...)
+
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+	cmd.Env = os.Environ()
+
+	cmd.Start()
+
+	cmd.Wait()
 
 	sendEnd()
 
@@ -182,6 +177,10 @@ func sendHeartbeat() {
 		}
 
 	}
+
+}
+
+func catchEnd() {
 
 }
 
