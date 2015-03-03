@@ -3,19 +3,33 @@ Mothership
 
 ## About
 
-Mothership is a process / micro-service monitoring system. 
+Mothership is a process / micro-service monitoring system. The client wraps a process on a remote system and sends info to the Mothership. 
 
 
 ## Installation
 
-Server: 
- 1) go run server.go
-   
+#### Server: 
+```sh
+go run server.go
+```   
 
-Client:
- 1) go build client.go 
- 2) Copy binary to clients
- 3) run `client {command} {args}`
+#### Client:
+
+
+```sh
+go build client.go 
+```
+Build Client
+
+```sh
+scp client server:/usr/local/bin
+```
+Copy client to
+
+```sh
+client {command} {args}
+```
+Run client 
 
 
 ## To do
