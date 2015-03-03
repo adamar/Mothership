@@ -55,21 +55,7 @@ func main() {
 			log.Print("nothing to run")
 		}
 
-	case len(os.Args) == 2:
-
-		sendCom(os.Args[1:], "/start")
-		go sendHeartbeat()
-		cmd := exec.Command(os.Args[1])
-
-		cmd.Stdout = os.Stdout
-		cmd.Stderr = os.Stderr
-		cmd.Env = os.Environ()
-
-		cmd.Start()
-
-		cmd.Wait()
-
-	case len(os.Args) > 2:
+	case len(os.Args) > 1:
 
 		sendCom(os.Args[1:], "/start")
 		go sendHeartbeat()
