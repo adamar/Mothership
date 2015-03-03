@@ -180,7 +180,12 @@ func sendHeartbeat() {
 
 }
 
-func catchEnd() {
+func catchEnd(c <-chan os.Signal) {
+
+	for sig := range c {
+		log.Print("Got Ctrl+c")
+		os.Exit(1)
+	}
 
 }
 
