@@ -57,7 +57,7 @@ func main() {
 	}
 
 	sigChan := make(chan os.Signal)
-	cmdChan := make(chan error, 1)
+	cmdChan := make(chan error)
 
 	signal.Notify(sigChan, os.Interrupt)
 	go catchEnd(sigChan)
@@ -87,7 +87,6 @@ func main() {
 			if cmdErr != nil {
 				log.Print(cmdErr)
 			}
-			log.Print("cmdChan")
 			exitStatus := cmd.ProcessState.Sys().(syscall.WaitStatus).ExitStatus()
 			log.Print(exitStatus)
 			os.Exit(0)
